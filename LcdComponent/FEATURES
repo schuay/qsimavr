@@ -1,0 +1,62 @@
+Column 1: Implemented
+Column 2: Tested
+
+-   4- or 8-bit MPU
+-   5x8 and 5x11 dot display character pattern format
+-   Special character pattern (?)
+-   Character Generator ROM (10080 bits)
+-   Character generator RAM (64x8 bits, user defined fonts)
+x   Display data RAM 80x8 bits (80 characters)
+x   Data register DR, instruction register IR
+
+                        RS  R/W
+x   Instruction Write   L   L
+x   Read busy/address   L   H
+x   Data write          H   L
+x   Data read           H   H
+
+-   1-line display mode (DDRAM address range 0x00 - 0x4F)
+x   2-line display mode (DDRAM address range 0x00 - 0x27, 0x40 - 0x67)
+
+?   Cursor Blink ON/OFF
+
+    RS  R/W DB7 DB6 DB5 DB4 DB3 DB2 DB1 DB0
+x   0   0   0   0   0   0   0   0   0   1   Clear Display   (1.53ms)
+
+    Writes 0x20 to all DDRAM addresses, sets address counter to 0x00. Cursor is
+    returned to left edge of first line. Entry mode set to increment. (What about
+    display shift?)
+
+x   0   0   0   0   0   0   0   0   1   *   Return Home     (1.53ms)
+
+    Address count = 0x00
+    Cursor to top left, first line. Display shift reset. No change to DDRAM contents.
+
+?   0   0   0   0   0   0   0   1   I/D SH  Entry Mode Set  (39us)
+
+    Shift direction of cursor or display on write.
+
+?   0   0   0   0   0   0   1   D   C   B   Display On/Off  (39us) 
+
+    Display/Cursor/Blink On/Off
+
+?   0   0   0   0   0   1   S/C R/L *   *   Cursor/Display Shift    (39us)
+?   0   0   0   0   1   DL  N   F   *   *   Function Set    (39us)
+
+    Interface data length 8-/4-bit
+    Display line number 1/2
+    Display font type 5x8/5x11
+
+?   0   0   0   1   AC5 AC4 AC3 AC2 AC1 AC0 Set CGRAM address   (39us)
+x   0   0   1   AC6 AC5 AC4 AC3 AC2 AC1 AC0 Set DDRAM address   (39us)
+?   0   1   BF  AC6 AC5 AC4 AC3 AC2 AC1 AC0 Read busy flag, address (0us)
+x   1   0   D7  D6  D5  D4  D3  D2  D1  D0  Write data to RAM (address auto-in/decremented after write) (43us)
+?   1   1   D7  D6  D5  D4  D3  D2  D1  D0  Read data from RAM (address auto-in/decremented after write)    (43us)
+
+    There are in-depth notes on this, see datasheet.
+
+    Initialization:
+?   Display Clear, Set Functions, Control Display ON/OFF, Set Entry Mode (p24, KS0066U datasheet)
+?   During this time (~30ms), the display is busy.
+
+

@@ -1,0 +1,24 @@
+Binary coded decimal clock/calendar (sec, min, hr, day, date, mon, yr)
+Adjustments for months with < 31 days, leap years until 2100
+56 bytes of NV SRAM
+24h or 12h/AM/PM mode
+
+RTC registers in addresses 0x00 - 0x07
+RAM registers in addresses 0x08 - 0x3f (addresses wrap around to 0x00)
+
+Day of week increments at midnight ( % 7) + 1 (?)
+
+Reset date: (Clock Halt set to 1)
+MM/DD/YY DOW HH:MM:SS
+01/01/00  01 00:00:00
+
+After writing seconds, remaining time + date registers must be written within 1
+sec.
+
+Control register:
+Mainly controls output on square wave pin...
+
+TWI address: 1101000
+Write: Control Byte -> Word Address -> 0 or more data bytes.
+Read:  Control Byte -> Data bytes until NAK (starting from current address pointer)
+

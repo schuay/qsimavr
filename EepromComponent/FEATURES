@@ -1,0 +1,27 @@
+1 Kbit/128 bytes storage
+Controlled over I2C as a slave
+Timing checks (especially 5ms write cycle)
+Only last 8 bytes of a write data transfer stored
+
+Address:
+
+ST  A7  A6  A5  A4  A3  A2  A1  R/W
+    1   0   1   0   *   *   *   1/0
+
+Byte Write:
+After control byte, the next byte is the word address which is written into the
+address pointer. The next byte is written to address. 
+
+Page Write:
+Similar to byte write. Written only once STOP is received. On each byte, lower
+4 bits of address pointer are incremented. Higher order 7 (??) bits remain
+constant. If more than 8 are received, address counter will _roll over_. Writes
+are always to a single page!!
+
+No ACK returned if device busy during write cycle!
+
+Current Address Read:
+After control byte, data at address counter is sent (which is not acknowledged). STOP
+
+Random Read:
+Write address, START, read.

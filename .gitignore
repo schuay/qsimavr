@@ -1,10 +1,12 @@
-*.pro
 *.pro.user
 *.o
 *.swp
 *.so
 *.so.*
+*.a
 Makefile
 ui_*
 moc_*
 qsimavr
+*.elf
+*.axf

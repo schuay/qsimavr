@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>702</width>
+    <height>619</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>QSimAVR</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QMdiArea" name="mdiArea"/>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>702</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionLoad_Firmware"/>
+    <addaction name="separator"/>
+    <addaction name="actionRecent0"/>
+    <addaction name="actionRecent1"/>
+    <addaction name="actionRecent2"/>
+    <addaction name="actionRecent3"/>
+    <addaction name="actionRecent4"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <widget class="QMenu" name="menuPlugins">
+     <property name="title">
+      <string>Plugins</string>
+     </property>
+     <addaction name="action_Available"/>
+     <addaction name="action_Plugins"/>
+     <addaction name="action_Here"/>
+    </widget>
+    <addaction name="menuPlugins"/>
+    <addaction name="actionConfigure_QSimAVR"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuSettings"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
+  <action name="actionConfigure_QSimAVR">
+   <property name="text">
+    <string>Configure QSimAVR...</string>
+   </property>
+  </action>
+  <action name="actionRecent0">
+   <property name="text">
+    <string>[Recent]</string>
+   </property>
+  </action>
+  <action name="actionRecent1">
+   <property name="text">
+    <string>[Files]</string>
+   </property>
+  </action>
+  <action name="actionRecent2">
+   <property name="text">
+    <string>[Here]</string>
+   </property>
+  </action>
+  <action name="action_Available">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>[Available]</string>
+   </property>
+  </action>
+  <action name="action_Plugins">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>[Plugins]</string>
+   </property>
+  </action>
+  <action name="action_Here">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>[Here]</string>
+   </property>
+  </action>
+  <action name="actionRecent3">
+   <property name="text">
+    <string>[Here]</string>
+   </property>
+  </action>
+  <action name="actionRecent4">
+   <property name="text">
+    <string>[And Here]</string>
+   </property>
+  </action>
+  <action name="actionLoad_Firmware">
+   <property name="text">
+    <string>Load Firmware...</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>
