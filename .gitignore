@@ -1,0 +1,10 @@
+*.pro
+*.pro.user
+*.o
+*.swp
+*.so
+*.so.*
+Makefile
+ui_*
+moc_*
+qsimavr
