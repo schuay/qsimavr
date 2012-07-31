@@ -18,6 +18,7 @@
 
 
 #include <QApplication>
+#include <stdio.h>
 
 #include "QsLog.h"
 #include "QsLogDest.h"
@@ -32,6 +33,9 @@ int main(int argc, char *argv[])
     QsLogging::DestinationPtr debugDestination(
                 QsLogging::DestinationFactory::MakeDebugOutputDestination());
     logger.addDestination(debugDestination.get());
+
+    /* Flush stdout buffer on \n. */
+    setlinebuf(stdout);
 
     MainWindow w;
     w.show();
