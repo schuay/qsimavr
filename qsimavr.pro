@@ -6,4 +6,5 @@ SUBDIRS += \
     LedButtonsComponent \
     EepromComponent \
     RtcComponent \
-    TwiComponent
+    TwiComponent \
+    GlcdComponent
