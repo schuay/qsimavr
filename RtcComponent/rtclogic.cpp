@@ -78,6 +78,11 @@ typedef struct {
 
 RtcLogic::RtcLogic() : twi(this), aptr(0)
 {
+    memset(&io, 0, sizeof(io));
+    io.instance = this;
+    io.io.kind = "ds1307";
+    io.io.reset = RtcLogic::resetHook;
+
     /* Reset to initial state:
      *
      * Clock Halt set to 1
@@ -189,18 +194,22 @@ avr_cycle_count_t RtcLogic::incrementSecondsHook(avr_t *avr, avr_cycle_count_t w
     return when + avr_usec_to_cycles(avr, USECS_PER_SEC);
 }
 
+void RtcLogic::resetHook(avr_io_t *io)
+{
+    rtc_io_t *p = (rtc_io_t *)io;
+    avr_cycle_timer_register_usec(io->avr, USECS_PER_SEC, RtcLogic::incrementSecondsHook, p->instance);
+}
+
 void RtcLogic::connect(avr_t *avr)
 {
     this->avr = avr;
-    avr_cycle_timer_register_usec(avr, USECS_PER_SEC, RtcLogic::incrementSecondsHook, this);
+    avr_register_io(avr, &io.io);
 
     twi.connect(avr);
 }
 
 void RtcLogic::disconnect()
 {
-    avr_cycle_timer_cancel(avr, RtcLogic::incrementSecondsHook, this);
-
     twi.disconnect();
 }
 
