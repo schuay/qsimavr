@@ -36,13 +36,21 @@ public:
     void received(const QByteArray &data);
 
 private:
+    /** Increments the address pointer and returns its original value. */
     uint8_t incrementAddress();
+
+    /** Increments the time stored in sram.
+     *  Called once per second (based on avr cycle calculations). */
+    void incrementSeconds();
+    static avr_cycle_count_t incrementSecondsHook(avr_t *avr, avr_cycle_count_t when, void *param);
 
 private:
     TwiComponent twi;
 
     QByteArray sram;
     uint8_t aptr;   /**< Address pointer. */
+
+    avr_t *avr;
 };
 
 #endif // RTCLOGIC_H
