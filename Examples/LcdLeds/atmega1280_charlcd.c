@@ -37,7 +37,7 @@ static uint8_t minute = 0;
 static uint8_t second = 0;
 static volatile uint8_t update_needed = 0;
 
-#include "avr_hd44780.c"
+#include "avr_hd44780.h"
 
 ISR( TIMER1_COMPA_vect )
 {

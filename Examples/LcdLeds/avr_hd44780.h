@@ -11,6 +11,11 @@
  * $Id: hd44780.h 2002 2009-06-25 20:21:16Z joerg_wunsch $
  */
 
+#ifndef __HD44780_H__
+#define __HD44780_H__
+
+#include <stdbool.h>
+
 /*
  * Send byte b to the LCD.  rs is the RS signal (register select), 0
  * selects instruction register, 1 selects the data register.
@@ -102,3 +107,5 @@ void	hd44780_powerdown(void);
  */
 #define HD44780_DDADDR(addr) \
 	(0x80 | ((addr) & 0x7f))
+
+#endif /*__HD44780_H__*/
