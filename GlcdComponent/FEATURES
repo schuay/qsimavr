@@ -1,0 +1,22 @@
+128 (width) x 64 (height) pixels
+
+2x NT7108 driver chip, each of these:
+512 byte display RAM
+
+Reset pin (low active) procedure:
+* Display off
+* Start line (Z-address) set to 0
+* No instruction except status read accepted
+* Rise time 200ns
+
+Data read with falling E signal
+
+Dummy read required by display RAM read!!
+
+X Address (vertical) within page
+Y address (horizontal)
+Z address (which line displayed at top)
+All of this needs testing...
+
+
+Write and read timings!!
