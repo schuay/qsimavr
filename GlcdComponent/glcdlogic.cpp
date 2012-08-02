@@ -21,6 +21,8 @@
 
 #include <avr_ioport.h>
 
+#define _BV(bit) (1 << bit)
+
 enum {
     IRQ_GLCD_CS1,   /**< Low active. */
     IRQ_GLCD_CS2,   /**< Low active. */
@@ -61,6 +63,10 @@ static const char *irq_names[] = {
 
 GlcdLogic::GlcdLogic()
 {
+    avr = NULL;
+    irq = NULL;
+
+    pinstate = 0;
 }
 
 void GlcdLogic::connect(avr_t *avr)
@@ -97,6 +103,7 @@ void GlcdLogic::disconnect()
 {
     avr_free_irq(irq, IRQ_GLCD_COUNT);
     irq = NULL;
+    avr = NULL;
 
     chip1.disconnect();
     chip2.disconnect();
@@ -110,5 +117,12 @@ void GlcdLogic::pinChangedHook(struct avr_irq_t *irq, uint32_t value, void *para
 
 void GlcdLogic::pinChanged(avr_irq_t *irq, uint32_t value)
 {
-    qDebug("%s: IRQ %s Value %d", __PRETTY_FUNCTION__, irq->name, value);
+    /** Pins are only processed by the GLCD on falling E edges. */
+    bool fallingE = (irq->irq == IRQ_GLCD_E && value == 0 && (pinstate & _BV(IRQ_GLCD_E)) != 0);
+
+    pinstate = (pinstate & ~_BV(irq->irq)) | (value << irq->irq);
+
+    if (fallingE) {
+        qDebug("%s: 0x%04x", __PRETTY_FUNCTION__, pinstate);
+    }
 }

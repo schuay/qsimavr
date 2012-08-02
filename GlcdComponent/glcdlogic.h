@@ -40,6 +40,9 @@ private:
     avr_t *avr;
     avr_irq_t *irq;
 
+    /** A bitfield representing the current pin state. */
+    uint16_t pinstate;
+
     /**
      * The GLCD contains two identical controller chips;
      * chip1 handles the left side of the display, chip2 the right.
