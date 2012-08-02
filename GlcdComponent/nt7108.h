@@ -17,18 +17,21 @@
 
 
 
-#include "glcdfactory.h"
+#ifndef NT7108_H
+#define NT7108_H
 
-#include "glcdlogic.h"
+#include <sim_avr.h>
 
-GlcdFactory::GlcdFactory()
+class NT7108
 {
-}
+public:
+    NT7108();
 
-Component GlcdFactory::create()
-{
-    QSharedPointer<GlcdLogic> logic = QSharedPointer<GlcdLogic>(new GlcdLogic());
-    Component component = { QSharedPointer<ComponentGui>(), logic };
+    void connect(avr_t *avr);
+    void disconnect();
 
-    return component;
-}
+private:
+    avr_t *avr;
+};
+
+#endif // NT7108_H

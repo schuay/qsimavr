@@ -32,4 +32,6 @@ public:
     Component create();
 };
 
+PUBLISH_PLUGIN(GlcdFactory)
+
 #endif // GLCDFACTORY_H

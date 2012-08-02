@@ -9,10 +9,14 @@ TEMPLATE = lib
 
 DEFINES += GLCDCOMPONENT_LIBRARY
 
-SOURCES += glcdfactory.cpp
+SOURCES += glcdfactory.cpp \
+    glcdlogic.cpp \
+    nt7108.cpp
 
 HEADERS += glcdfactory.h\
-        GlcdComponent_global.h
+        GlcdComponent_global.h \
+    glcdlogic.h \
+    nt7108.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN

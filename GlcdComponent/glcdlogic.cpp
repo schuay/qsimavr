@@ -17,18 +17,22 @@
 
 
 
-#include "glcdfactory.h"
-
 #include "glcdlogic.h"
 
-GlcdFactory::GlcdFactory()
+GlcdLogic::GlcdLogic()
 {
 }
 
-Component GlcdFactory::create()
+void GlcdLogic::connect(avr_t *avr)
 {
-    QSharedPointer<GlcdLogic> logic = QSharedPointer<GlcdLogic>(new GlcdLogic());
-    Component component = { QSharedPointer<ComponentGui>(), logic };
+    this->avr = avr;
 
-    return component;
+    chip1.connect(avr);
+    chip2.connect(avr);
+}
+
+void GlcdLogic::disconnect()
+{
+    chip1.disconnect();
+    chip2.disconnect();
 }

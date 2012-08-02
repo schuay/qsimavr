@@ -17,18 +17,30 @@
 
 
 
-#include "glcdfactory.h"
+#ifndef GLCDLOGIC_H
+#define GLCDLOGIC_H
 
-#include "glcdlogic.h"
+#include <component.h>
 
-GlcdFactory::GlcdFactory()
+#include "nt7108.h"
+
+class GlcdLogic : public ComponentLogic
 {
-}
+public:
+    GlcdLogic();
 
-Component GlcdFactory::create()
-{
-    QSharedPointer<GlcdLogic> logic = QSharedPointer<GlcdLogic>(new GlcdLogic());
-    Component component = { QSharedPointer<ComponentGui>(), logic };
+    void connect(avr_t *avr);
+    void disconnect();
 
-    return component;
-}
+private:
+    avr_t *avr;
+
+    /**
+     * The GLCD contains two identical controller chips;
+     * chip1 handles the left side of the display, chip2 the right.
+     */
+    NT7108 chip1;
+    NT7108 chip2;
+};
+
+#endif // GLCDLOGIC_H

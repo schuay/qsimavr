@@ -17,18 +17,17 @@
 
 
 
-#include "glcdfactory.h"
+#include "nt7108.h"
 
-#include "glcdlogic.h"
-
-GlcdFactory::GlcdFactory()
+NT7108::NT7108()
 {
 }
 
-Component GlcdFactory::create()
+void NT7108::connect(avr_t *avr)
 {
-    QSharedPointer<GlcdLogic> logic = QSharedPointer<GlcdLogic>(new GlcdLogic());
-    Component component = { QSharedPointer<ComponentGui>(), logic };
+    this->avr = avr;
+}
 
-    return component;
+void NT7108::disconnect()
+{
 }
