@@ -33,7 +33,12 @@ public:
     void disconnect();
 
 private:
+    void pinChanged(struct avr_irq_t * irq, uint32_t value);
+    static void pinChangedHook(struct avr_irq_t *irq, uint32_t value, void *param);
+
+private:
     avr_t *avr;
+    avr_irq_t *irq;
 
     /**
      * The GLCD contains two identical controller chips;

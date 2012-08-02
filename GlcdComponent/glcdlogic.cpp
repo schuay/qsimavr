@@ -19,6 +19,46 @@
 
 #include "glcdlogic.h"
 
+#include <avr_ioport.h>
+
+enum {
+    IRQ_GLCD_CS1,   /**< Low active. */
+    IRQ_GLCD_CS2,   /**< Low active. */
+    IRQ_GLCD_RS,
+    IRQ_GLCD_RW,
+    IRQ_GLCD_E,
+
+    IRQ_GLCD_D0,
+    IRQ_GLCD_D1,
+    IRQ_GLCD_D2,
+    IRQ_GLCD_D3,
+    IRQ_GLCD_D4,
+    IRQ_GLCD_D5,
+    IRQ_GLCD_D6,
+    IRQ_GLCD_D7,
+
+    IRQ_GLCD_RST,   /**< Low active. */
+
+    IRQ_GLCD_COUNT
+};
+
+static const char *irq_names[] = {
+    "<glcd.CS1",
+    "<glcd.CS2",
+    "<glcd.RS",
+    "<glcd.RW",
+    "<glcd.E",
+    "=glcd.D0",
+    "=glcd.D1",
+    "=glcd.D2",
+    "=glcd.D3",
+    "=glcd.D4",
+    "=glcd.D5",
+    "=glcd.D6",
+    "=glcd.D7",
+    "<glcd.RST"
+};
+
 GlcdLogic::GlcdLogic()
 {
 }
@@ -29,10 +69,46 @@ void GlcdLogic::connect(avr_t *avr)
 
     chip1.connect(avr);
     chip2.connect(avr);
+
+    irq = avr_alloc_irq(&avr->irq_pool, 0, IRQ_GLCD_COUNT, irq_names);
+    for (int i = 0; i < IRQ_GLCD_COUNT; i++) {
+        avr_irq_register_notify(irq + i, GlcdLogic::pinChangedHook, this);
+    }
+
+    /* Wire data pins. */
+    for (int i = 0; i < 8; i++) {
+        avr_irq_t *irq_avr = avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('A'), i);
+        avr_irq_t *irq_lcd = irq + IRQ_GLCD_D0 + i;
+
+        avr_connect_irq(irq_avr, irq_lcd);
+        avr_connect_irq(irq_lcd, irq_avr);
+    }
+
+    /* And all others. */
+    avr_connect_irq(avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('E'), 2), irq + IRQ_GLCD_CS1);
+    avr_connect_irq(avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('E'), 3), irq + IRQ_GLCD_CS2);
+    avr_connect_irq(avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('E'), 4), irq + IRQ_GLCD_RS);
+    avr_connect_irq(avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('E'), 5), irq + IRQ_GLCD_RW);
+    avr_connect_irq(avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('E'), 6), irq + IRQ_GLCD_E);
+    avr_connect_irq(avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('E'), 7), irq + IRQ_GLCD_RST);
 }
 
 void GlcdLogic::disconnect()
 {
+    avr_free_irq(irq, IRQ_GLCD_COUNT);
+    irq = NULL;
+
     chip1.disconnect();
     chip2.disconnect();
+}
+
+void GlcdLogic::pinChangedHook(struct avr_irq_t *irq, uint32_t value, void *param)
+{
+    GlcdLogic *p = (GlcdLogic *)param;
+    p->pinChanged(irq, value);
+}
+
+void GlcdLogic::pinChanged(avr_irq_t *irq, uint32_t value)
+{
+    qDebug("%s: IRQ %s Value %d", __PRETTY_FUNCTION__, irq->name, value);
 }
