@@ -44,8 +44,9 @@ enum {
     IRQ_GLCD_COUNT
 };
 
-class NT7108
+class NT7108 : public QObject
 {
+    Q_OBJECT
 public:
     NT7108();
 
@@ -59,6 +60,9 @@ public:
      */
     void processCommand(uint16_t pins);
 
+signals:
+    void transmit(uint8_t data);
+
 private:
     void readDisplayData();
     void writeDisplayData(uint8_t data);
@@ -68,8 +72,20 @@ private:
     void setAddress(uint8_t address);
     void displayOnOff(uint8_t on);
 
+    /** Returns an index into ram, and increments xaddr and yaddr appropriately. */
+    uint8_t incrementAddress();
+
 private:
     avr_t *avr;
+
+    bool on;
+    QByteArray ram;
+
+    uint8_t output; /**< Output register, see display read. */
+
+    uint8_t yaddr;  /**< Horizontal address, 0-64. */
+    uint8_t xaddr;  /**< Vertical address, 0-7. */
+    uint8_t zaddr;  /**< The display data RAM displayed at top of screen. */
 };
 
 #endif // NT7108_H

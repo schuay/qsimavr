@@ -21,8 +21,17 @@
 
 #define _BV(bits) (1 << bits)
 
+#define HEIGHT (64)
+#define WIDTH (64)
+#define PX_PER_PAGE (8)
+
 NT7108::NT7108()
-{
+{    
+    on = false;
+    ram.fill(0, HEIGHT * WIDTH);
+    yaddr = 0;
+    xaddr = 0;
+    zaddr = 0;
 }
 
 void NT7108::connect(avr_t *avr)
@@ -91,35 +100,62 @@ void NT7108::processCommand(uint16_t pins)
 
 void NT7108::readDisplayData()
 {
-    qDebug("GLCD: %s", __PRETTY_FUNCTION__);
+    /* Needs a dummy read. The read command simultaneously moves the requested contents
+     * to a buffer (which corresponds to latching into the output register) and moves the
+     * previous contents of the buffer onto the pins. */
+
+    uint8_t out = output;
+    output = ram[incrementAddress()];
+    qDebug("GLCD: %s (0x%02x)", __PRETTY_FUNCTION__, out);
+    emit transmit(out);
 }
 
 void NT7108::writeDisplayData(uint8_t data)
 {
-    qDebug("GLCD: %s", __PRETTY_FUNCTION__);
+    qDebug("GLCD: %s (0x%02x)", __PRETTY_FUNCTION__, data);
+    ram[incrementAddress()] = data;
 }
 
 void NT7108::readStatus()
 {
     qDebug("GLCD: %s", __PRETTY_FUNCTION__);
+
+    /* TODO */
+    uint8_t busy = 0 << 7;
+    uint8_t onoff = 0 << 5;
+    uint8_t reset = 0 << 4;
+
+    emit transmit(busy | onoff | reset);
 }
 
 void NT7108::setStartLine(uint8_t line)
 {
-    qDebug("GLCD: %s", __PRETTY_FUNCTION__);
+    qDebug("GLCD: %s (0x%02x)", __PRETTY_FUNCTION__, line);
+    zaddr = line;
 }
 
 void NT7108::setPage(uint8_t page)
 {
-    qDebug("GLCD: %s", __PRETTY_FUNCTION__);
+    qDebug("GLCD: %s (0x%02x)", __PRETTY_FUNCTION__, page);
+    xaddr = page;
 }
 
 void NT7108::setAddress(uint8_t address)
 {
-    qDebug("GLCD: %s", __PRETTY_FUNCTION__);
+    qDebug("GLCD: %s (0x%02x)", __PRETTY_FUNCTION__, address);
+    yaddr = address;
 }
 
 void NT7108::displayOnOff(uint8_t on)
 {
-    qDebug("GLCD: %s", __PRETTY_FUNCTION__);
+    qDebug("GLCD: %s (0x%02x)", __PRETTY_FUNCTION__, on);
+    this->on = (on == 1);
+}
+
+uint8_t NT7108::incrementAddress()
+{
+    /* TODO: find out how this really increments. */
+    uint8_t addr = xaddr * PX_PER_PAGE + yaddr;
+    yaddr = (yaddr + 1) % 64;
+    return addr;
 }

@@ -21,16 +21,22 @@
 #define GLCDLOGIC_H
 
 #include <component.h>
+#include <QObject>
 
 #include "nt7108.h"
 
-class GlcdLogic : public ComponentLogic
+class GlcdLogic : public QObject, public ComponentLogic
 {
+    Q_OBJECT
+
 public:
     GlcdLogic();
 
     void connect(avr_t *avr);
     void disconnect();
+
+private slots:
+    void transmit(uint8_t data);
 
 private:
     void pinChanged(struct avr_irq_t * irq, uint32_t value);
@@ -60,6 +66,13 @@ private:
      */
     avr_cycle_count_t lastReset, lastEChange;
     avr_cycle_count_t cyclesELowHigh;
+
+    /**
+     * If we are already in an IRQ handler, do not handle it a second time.
+     * This can only occur by pin changes triggered from chip1 or chip2, which
+     * we are not interested in.
+     */
+    bool reentrant;
 };
 
 #endif // GLCDLOGIC_H

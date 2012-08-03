@@ -25,11 +25,6 @@
 #define _BV(bit) (1 << bit)
 
 static const char *irq_names[] = {
-    "<glcd.CS1",
-    "<glcd.CS2",
-    "<glcd.RS",
-    "<glcd.RW",
-    "<glcd.E",
     "=glcd.D0",
     "=glcd.D1",
     "=glcd.D2",
@@ -38,7 +33,12 @@ static const char *irq_names[] = {
     "=glcd.D5",
     "=glcd.D6",
     "=glcd.D7",
+    "<glcd.RW",
+    "<glcd.RS",
     "<glcd.RST"
+    "<glcd.E",
+    "<glcd.CS1",
+    "<glcd.CS2",
 };
 
 #define NS_PER_SEC (1000000000UL)
@@ -50,8 +50,11 @@ GlcdLogic::GlcdLogic()
     irq = NULL;
 
     pinstate = 0;
-    lastEChange = 0;
-    lastReset = 0;
+
+    QObject::connect(&chip1, SIGNAL(transmit(uint8_t)),
+                     this, SLOT(transmit(uint8_t)), Qt::DirectConnection);
+    QObject::connect(&chip2, SIGNAL(transmit(uint8_t)),
+                     this, SLOT(transmit(uint8_t)), Qt::DirectConnection);
 }
 
 void GlcdLogic::connect(avr_t *avr)
@@ -63,6 +66,11 @@ void GlcdLogic::connect(avr_t *avr)
 
     /* Calculate timing cycles. */
     cyclesELowHigh = (avr->frequency * NS_E_HIGH_LOW) / NS_PER_SEC;
+
+    /* Reset internal state. */
+    lastEChange = avr->cycle;
+    lastReset = avr->cycle;
+    reentrant = false;
 
     /* Allocated IRQs and register callbacks. */
     irq = avr_alloc_irq(&avr->irq_pool, 0, IRQ_GLCD_COUNT, irq_names);
@@ -106,30 +114,47 @@ void GlcdLogic::pinChangedHook(struct avr_irq_t *irq, uint32_t value, void *para
 
 void GlcdLogic::pinChanged(avr_irq_t *irq, uint32_t value)
 {
+    if (reentrant) {
+        return;
+    }
+
+    bool fallingE = false;
+    bool risingE = false;
+
     /* Timing checks. */
-    switch (irq->irq) {
-    case IRQ_GLCD_E:
+    if (irq->irq == IRQ_GLCD_E) {
         if (lastEChange + cyclesELowHigh > avr->cycle) {
             qDebug("GLCD: Minimum E high/low level width exceeded.");
         }
         lastEChange = avr->cycle;
-        break;
-    default: break;
-    }
 
-    /* Pins are only processed by the GLCD on falling E edges. */
-    bool fallingE = (irq->irq == IRQ_GLCD_E && value == 0 && (pinstate & _BV(IRQ_GLCD_E)) != 0);
+        fallingE = (value == 0 && (pinstate & _BV(IRQ_GLCD_E)) != 0);
+        risingE = (value == 1 && (pinstate & _BV(IRQ_GLCD_E)) == 0);
+    }
 
     /* Update our internal pin state. */
     pinstate = (pinstate & ~_BV(irq->irq)) | (value << irq->irq);
 
+    /* TODO: This model is too simplistic. Reads should be triggered (with a delay of 320 ns)
+     * at the rising E edge. What happens if E goes low before 320 ns? How do we find out about DDR settings?
+     */
+
     /* Process command if E just went low. */
     if (fallingE) {
+        reentrant = true;
         if (!(pinstate & _BV(IRQ_GLCD_CS1))) {
             chip1.processCommand(pinstate);
         }
         if (!(pinstate & _BV(IRQ_GLCD_CS2))) {
             chip2.processCommand(pinstate);
         }
+        reentrant = false;
+    }
+}
+
+void GlcdLogic::transmit(uint8_t data)
+{
+    for (int i = 0; i < 8; i++) {
+        avr_raise_irq(irq + i, (data >> i) & 0x01);
     }
 }
