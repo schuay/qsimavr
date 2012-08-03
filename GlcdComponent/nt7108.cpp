@@ -45,24 +45,81 @@ void NT7108::processCommand(uint16_t pins)
 
     /* Read/write display data. Read if RW is set. */
     case IRQ_GLCD_RS:
+        if (pins & _BV(IRQ_GLCD_RW)) {
+            readDisplayData();
+        } else {
+            writeDisplayData((uint8_t)pins);
+        }
+        break;
 
     /* Status read. The only valid command if busy.
      * Busy 0 On/Off Reset 0 0 0 0 */
     case IRQ_GLCD_RW:
+        readStatus();
+        break;
 
     /* Set page: 1 0 1 1 1 A A A
      * or
      * Display start line: 1 1 A A A A A */
     case IRQ_GLCD_D7:
+        if (pins & _BV(IRQ_GLCD_D6)) {
+            setStartLine(pins & __extension__ 0b00111111);
+        } else {
+            setPage(pins & __extension__ 0b00000111);
+        }
+        break;
 
     /* Set address: 0 1 A A A A A A */
     case IRQ_GLCD_D6:
+        setAddress(pins & __extension__ 0b00111111);
+        break;
 
     /* Display on/off: 0 0 1 1 1 1 1 On/Off */
     case IRQ_GLCD_D5:
+        if ((pins & __extension__ 0b00111110) != __extension__ 0b00111110) {
+            qDebug("GLCD: Invalid pin state 0x%04x, ignoring.", pins);
+        } else {
+            displayOnOff(pins & __extension__ 0b00000001);
+        }
+        break;
 
     default:
         qDebug("GLCD: Invalid pin state 0x%04x, ignoring.", pins);
         return;
     }
+}
+
+void NT7108::readDisplayData()
+{
+    qDebug("GLCD: %s", __PRETTY_FUNCTION__);
+}
+
+void NT7108::writeDisplayData(uint8_t data)
+{
+    qDebug("GLCD: %s", __PRETTY_FUNCTION__);
+}
+
+void NT7108::readStatus()
+{
+    qDebug("GLCD: %s", __PRETTY_FUNCTION__);
+}
+
+void NT7108::setStartLine(uint8_t line)
+{
+    qDebug("GLCD: %s", __PRETTY_FUNCTION__);
+}
+
+void NT7108::setPage(uint8_t page)
+{
+    qDebug("GLCD: %s", __PRETTY_FUNCTION__);
+}
+
+void NT7108::setAddress(uint8_t address)
+{
+    qDebug("GLCD: %s", __PRETTY_FUNCTION__);
+}
+
+void NT7108::displayOnOff(uint8_t on)
+{
+    qDebug("GLCD: %s", __PRETTY_FUNCTION__);
 }

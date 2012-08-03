@@ -117,14 +117,14 @@ void GlcdLogic::pinChanged(avr_irq_t *irq, uint32_t value)
     default: break;
     }
 
-    /** Pins are only processed by the GLCD on falling E edges. */
+    /* Pins are only processed by the GLCD on falling E edges. */
     bool fallingE = (irq->irq == IRQ_GLCD_E && value == 0 && (pinstate & _BV(IRQ_GLCD_E)) != 0);
 
+    /* Update our internal pin state. */
     pinstate = (pinstate & ~_BV(irq->irq)) | (value << irq->irq);
 
+    /* Process command if E just went low. */
     if (fallingE) {
-        qDebug("%s: 0x%04x", __PRETTY_FUNCTION__, pinstate);
-
         if (!(pinstate & _BV(IRQ_GLCD_CS1))) {
             chip1.processCommand(pinstate);
         }

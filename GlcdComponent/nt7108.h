@@ -24,11 +24,7 @@
 #include <sim_avr.h>
 
 enum {
-    IRQ_GLCD_CS1 = 0,   /**< Low active. */
-    IRQ_GLCD_CS2,       /**< Low active. */
-    IRQ_GLCD_E,
-
-    IRQ_GLCD_D0,
+    IRQ_GLCD_D0 = 0,
     IRQ_GLCD_D1,
     IRQ_GLCD_D2,
     IRQ_GLCD_D3,
@@ -40,6 +36,10 @@ enum {
     IRQ_GLCD_RW,
     IRQ_GLCD_RS,
     IRQ_GLCD_RST,       /**< Low active. */
+    IRQ_GLCD_E,
+
+    IRQ_GLCD_CS1,       /**< Low active. */
+    IRQ_GLCD_CS2,       /**< Low active. */
 
     IRQ_GLCD_COUNT
 };
@@ -58,6 +58,15 @@ public:
      * Pins is a bitfield of the current pin state.
      */
     void processCommand(uint16_t pins);
+
+private:
+    void readDisplayData();
+    void writeDisplayData(uint8_t data);
+    void readStatus();
+    void setStartLine(uint8_t line);
+    void setPage(uint8_t page);
+    void setAddress(uint8_t address);
+    void displayOnOff(uint8_t on);
 
 private:
     avr_t *avr;
