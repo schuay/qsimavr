@@ -24,27 +24,6 @@
 
 #define _BV(bit) (1 << bit)
 
-enum {
-    IRQ_GLCD_CS1,   /**< Low active. */
-    IRQ_GLCD_CS2,   /**< Low active. */
-    IRQ_GLCD_RS,
-    IRQ_GLCD_RW,
-    IRQ_GLCD_E,
-
-    IRQ_GLCD_D0,
-    IRQ_GLCD_D1,
-    IRQ_GLCD_D2,
-    IRQ_GLCD_D3,
-    IRQ_GLCD_D4,
-    IRQ_GLCD_D5,
-    IRQ_GLCD_D6,
-    IRQ_GLCD_D7,
-
-    IRQ_GLCD_RST,   /**< Low active. */
-
-    IRQ_GLCD_COUNT
-};
-
 static const char *irq_names[] = {
     "<glcd.CS1",
     "<glcd.CS2",
@@ -145,5 +124,12 @@ void GlcdLogic::pinChanged(avr_irq_t *irq, uint32_t value)
 
     if (fallingE) {
         qDebug("%s: 0x%04x", __PRETTY_FUNCTION__, pinstate);
+
+        if (!(pinstate & _BV(IRQ_GLCD_CS1))) {
+            chip1.processCommand(pinstate);
+        }
+        if (!(pinstate & _BV(IRQ_GLCD_CS2))) {
+            chip2.processCommand(pinstate);
+        }
     }
 }
