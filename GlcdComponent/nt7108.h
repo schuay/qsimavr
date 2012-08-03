@@ -54,7 +54,7 @@ public:
     void disconnect();
 
     /**
-     * Called when the GLCD chip has received a falling E edge.
+     * Called when the GLCD chip has received an E edge.
      * Timing checks are done, and all we need to do is execute the command.
      * Pins is a bitfield of the current pin state.
      */
@@ -75,13 +75,18 @@ private:
     /** Returns an index into ram, and increments xaddr and yaddr appropriately. */
     uint8_t incrementAddress();
 
+    /** Called by the simavr cycle timer system once the 320 ns data delay have expired. */
+    static avr_cycle_count_t transmitHook(struct avr_t *, avr_cycle_count_t, void *param);
+
 private:
     avr_t *avr;
+    avr_cycle_count_t cycleDataDelay;   /**< How many cycles to delay between E rising edge and data write. */
 
     bool on;
     QByteArray ram;
 
     uint8_t output; /**< Output register, see display read. */
+    uint8_t buffer; /**< Transmit buffer. Used to buffer output for transmitHook. */
 
     uint8_t yaddr;  /**< Horizontal address, 0-64. */
     uint8_t xaddr;  /**< Vertical address, 0-7. */

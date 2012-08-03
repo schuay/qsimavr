@@ -115,12 +115,7 @@ void GlcdLogic::pinChangedHook(struct avr_irq_t *irq, uint32_t value, void *para
 
 void GlcdLogic::pinChanged(avr_irq_t *irq, uint32_t value)
 {
-    if (reentrant) {
-        return;
-    }
-
-    bool fallingE = false;
-    bool risingE = false;
+    bool pinEChanged = false;
 
     /* Timing checks. */
     if (irq->irq == IRQ_GLCD_E) {
@@ -129,19 +124,18 @@ void GlcdLogic::pinChanged(avr_irq_t *irq, uint32_t value)
         }
         lastEChange = avr->cycle;
 
-        fallingE = (value == 0 && (pinstate & _BV(IRQ_GLCD_E)) != 0);
-        risingE = (value == 1 && (pinstate & _BV(IRQ_GLCD_E)) == 0);
+        pinEChanged = (value != ((pinstate >> IRQ_GLCD_E) & 0x01));
     }
 
     /* Update our internal pin state. */
     pinstate = (pinstate & ~_BV(irq->irq)) | (value << irq->irq);
 
-    /* TODO: This model is too simplistic. Reads should be triggered (with a delay of 320 ns)
-     * at the rising E edge. What happens if E goes low before 320 ns? How do we find out about DDR settings?
-     */
+    if (reentrant) {
+        return;
+    }
 
-    /* Process command if E just went low. */
-    if (fallingE) {
+    /* Process command if E just changed. */
+    if (pinEChanged) {
         reentrant = true;
         if (!(pinstate & _BV(IRQ_GLCD_CS1))) {
             chip1.processCommand(pinstate);

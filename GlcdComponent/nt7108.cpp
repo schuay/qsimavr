@@ -25,6 +25,9 @@
 #define WIDTH (64)
 #define PX_PER_PAGE (8)
 
+#define NS_DATA_DELAY (320UL)
+#define NS_PER_SEC (1000000000UL)
+
 NT7108::NT7108()
 {    
     on = false;
@@ -37,6 +40,7 @@ NT7108::NT7108()
 void NT7108::connect(avr_t *avr)
 {
     this->avr = avr;
+    cycleDataDelay = (avr->frequency * NS_DATA_DELAY) / NS_PER_SEC;
 }
 
 void NT7108::disconnect()
@@ -45,10 +49,20 @@ void NT7108::disconnect()
 
 void NT7108::processCommand(uint16_t pins)
 {
+    /* Reads are handled by us on rising E edges,
+     * writes on falling edges. */
+    const bool pinESet = ((pins & _BV(IRQ_GLCD_E)) != 0);
+    const bool pinRWSet = ((pins & _BV(IRQ_GLCD_RW)) != 0);
+    if (pinESet != pinRWSet) {
+        return;
+    }
+
+    /* Detect the highest set bit. */
     uint8_t highestSetBit = IRQ_GLCD_RS;
     while (!(pins & _BV(highestSetBit))) {
         highestSetBit--;
     }
+
 
     switch (highestSetBit) {
 
@@ -98,16 +112,25 @@ void NT7108::processCommand(uint16_t pins)
     }
 }
 
+avr_cycle_count_t NT7108::transmitHook(struct avr_t *, avr_cycle_count_t, void *param)
+{
+    NT7108 *p = (NT7108 *)param;
+    emit p->transmit(p->buffer);
+    return 0;
+}
+
 void NT7108::readDisplayData()
 {
+    qDebug("GLCD: %s (0x%02x)", __PRETTY_FUNCTION__, output);
+
     /* Needs a dummy read. The read command simultaneously moves the requested contents
      * to a buffer (which corresponds to latching into the output register) and moves the
      * previous contents of the buffer onto the pins. */
 
-    uint8_t out = output;
+    buffer = output;
     output = ram[incrementAddress()];
-    qDebug("GLCD: %s (0x%02x)", __PRETTY_FUNCTION__, out);
-    emit transmit(out);
+
+    avr_cycle_timer_register(avr, cycleDataDelay, transmitHook, this);
 }
 
 void NT7108::writeDisplayData(uint8_t data)
@@ -125,7 +148,8 @@ void NT7108::readStatus()
     uint8_t onoff = 0 << 5;
     uint8_t reset = 0 << 4;
 
-    emit transmit(busy | onoff | reset);
+    buffer = (busy | onoff | reset);
+    avr_cycle_timer_register(avr, cycleDataDelay, transmitHook, this);
 }
 
 void NT7108::setStartLine(uint8_t line)
