@@ -49,6 +49,17 @@ private:
      */
     NT7108 chip1;
     NT7108 chip2;
+
+    /**
+     * Timings.
+     * The read/write timings given in the datasheet probably apply
+     * to each chip separately, but without more information on how exactly this works,
+     * let's be pessimistic and track them globally.
+     *
+     * We are interested in E high and low level width (450 ns + 25 ns rise time).
+     */
+    avr_cycle_count_t lastReset, lastEChange;
+    avr_cycle_count_t cyclesELowHigh;
 };
 
 #endif // GLCDLOGIC_H

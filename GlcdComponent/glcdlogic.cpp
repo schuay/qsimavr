@@ -20,6 +20,7 @@
 #include "glcdlogic.h"
 
 #include <avr_ioport.h>
+#include <sim_time.h>
 
 #define _BV(bit) (1 << bit)
 
@@ -61,12 +62,17 @@ static const char *irq_names[] = {
     "<glcd.RST"
 };
 
+#define NS_PER_SEC (1000000000UL)
+#define NS_E_HIGH_LOW (475UL)     /**< Includes rise/fall time. */
+
 GlcdLogic::GlcdLogic()
 {
     avr = NULL;
     irq = NULL;
 
     pinstate = 0;
+    lastEChange = 0;
+    lastReset = 0;
 }
 
 void GlcdLogic::connect(avr_t *avr)
@@ -76,6 +82,10 @@ void GlcdLogic::connect(avr_t *avr)
     chip1.connect(avr);
     chip2.connect(avr);
 
+    /* Calculate timing cycles. */
+    cyclesELowHigh = (avr->frequency * NS_E_HIGH_LOW) / NS_PER_SEC;
+
+    /* Allocated IRQs and register callbacks. */
     irq = avr_alloc_irq(&avr->irq_pool, 0, IRQ_GLCD_COUNT, irq_names);
     for (int i = 0; i < IRQ_GLCD_COUNT; i++) {
         avr_irq_register_notify(irq + i, GlcdLogic::pinChangedHook, this);
@@ -117,6 +127,17 @@ void GlcdLogic::pinChangedHook(struct avr_irq_t *irq, uint32_t value, void *para
 
 void GlcdLogic::pinChanged(avr_irq_t *irq, uint32_t value)
 {
+    /* Timing checks. */
+    switch (irq->irq) {
+    case IRQ_GLCD_E:
+        if (lastEChange + cyclesELowHigh > avr->cycle) {
+            qDebug("GLCD: Minimum E high/low level width exceeded.");
+        }
+        lastEChange = avr->cycle;
+        break;
+    default: break;
+    }
+
     /** Pins are only processed by the GLCD on falling E edges. */
     bool fallingE = (irq->irq == IRQ_GLCD_E && value == 0 && (pinstate & _BV(IRQ_GLCD_E)) != 0);
 
