@@ -23,6 +23,7 @@
 #include <sim_time.h>
 
 #define _BV(bit) (1 << bit)
+#define DATA_PORT ('A')
 
 static const char *irq_names[] = {
     "=glcd.D0",
@@ -80,7 +81,7 @@ void GlcdLogic::connect(avr_t *avr)
 
     /* Wire data pins. */
     for (int i = 0; i < 8; i++) {
-        avr_irq_t *irq_avr = avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('A'), i);
+        avr_irq_t *irq_avr = avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ(DATA_PORT), i);
         avr_irq_t *irq_lcd = irq + IRQ_GLCD_D0 + i;
 
         avr_connect_irq(irq_avr, irq_lcd);
@@ -154,7 +155,16 @@ void GlcdLogic::pinChanged(avr_irq_t *irq, uint32_t value)
 
 void GlcdLogic::transmit(uint8_t data)
 {
+    avr_ioport_state_t state;
+    if (avr_ioctl(avr, AVR_IOCTL_IOPORT_GETSTATE(DATA_PORT), &state) != 0) {
+        qDebug("GLCD: avr_ioctl failed");
+    }
+
     for (int i = 0; i < 8; i++) {
-        avr_raise_irq(irq + i, (data >> i) & 0x01);
+        if (state.ddr & (1 << i)) {
+            qDebug("GLCD: Data port pin %d set to output, cannot write", i);
+            continue;
+        }
+        avr_raise_irq(irq + IRQ_GLCD_D0 + i, (data >> i) & 0x01);
     }
 }
