@@ -28,6 +28,12 @@
 #define NS_DATA_DELAY (320UL)
 #define NS_PER_SEC (1000000000UL)
 
+#if 0
+#define DEBUG(...) do { qDebug(__VA_ARGS__); } while (0)
+#else
+#define DEBUG(...)
+#endif
+
 NT7108::NT7108()
 {    
     on = false;
@@ -121,7 +127,7 @@ avr_cycle_count_t NT7108::transmitHook(struct avr_t *, avr_cycle_count_t, void *
 
 void NT7108::readDisplayData()
 {
-    qDebug("GLCD: %s (0x%02x)", __PRETTY_FUNCTION__, output);
+    DEBUG("GLCD: %s (0x%02x)", __PRETTY_FUNCTION__, output);
 
     /* Needs a dummy read. The read command simultaneously moves the requested contents
      * to a buffer (which corresponds to latching into the output register) and moves the
@@ -135,13 +141,13 @@ void NT7108::readDisplayData()
 
 void NT7108::writeDisplayData(uint8_t data)
 {
-    qDebug("GLCD: %s (0x%02x)", __PRETTY_FUNCTION__, data);
+    DEBUG("GLCD: %s (0x%02x)", __PRETTY_FUNCTION__, data);
     ram[incrementAddress()] = data;
 }
 
 void NT7108::readStatus()
 {
-    qDebug("GLCD: %s", __PRETTY_FUNCTION__);
+    DEBUG("GLCD: %s", __PRETTY_FUNCTION__);
 
     /* TODO */
     uint8_t busy = 0 << 7;
@@ -154,25 +160,25 @@ void NT7108::readStatus()
 
 void NT7108::setStartLine(uint8_t line)
 {
-    qDebug("GLCD: %s (0x%02x)", __PRETTY_FUNCTION__, line);
+    DEBUG("GLCD: %s (0x%02x)", __PRETTY_FUNCTION__, line);
     zaddr = line;
 }
 
 void NT7108::setPage(uint8_t page)
 {
-    qDebug("GLCD: %s (0x%02x)", __PRETTY_FUNCTION__, page);
+    DEBUG("GLCD: %s (0x%02x)", __PRETTY_FUNCTION__, page);
     xaddr = page;
 }
 
 void NT7108::setAddress(uint8_t address)
 {
-    qDebug("GLCD: %s (0x%02x)", __PRETTY_FUNCTION__, address);
+    DEBUG("GLCD: %s (0x%02x)", __PRETTY_FUNCTION__, address);
     yaddr = address;
 }
 
 void NT7108::displayOnOff(uint8_t on)
 {
-    qDebug("GLCD: %s (0x%02x)", __PRETTY_FUNCTION__, on);
+    DEBUG("GLCD: %s (0x%02x)", __PRETTY_FUNCTION__, on);
     this->on = (on == 1);
 }
 
