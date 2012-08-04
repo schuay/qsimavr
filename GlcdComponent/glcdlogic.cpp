@@ -75,24 +75,18 @@ void GlcdLogic::connect(avr_t *avr)
 
     /* Allocated IRQs and register callbacks. */
     irq = avr_alloc_irq(&avr->irq_pool, 0, IRQ_GLCD_COUNT, irq_names);
-    for (int i = 0; i < IRQ_GLCD_COUNT; i++) {
-        avr_irq_register_notify(irq + i, GlcdLogic::pinChangedHook, this);
-    }
+
+    avr_irq_register_notify(irq + IRQ_GLCD_E, GlcdLogic::pinChangedHook, this);
+    avr_irq_register_notify(irq + IRQ_GLCD_RST, GlcdLogic::pinChangedHook, this); /* TODO */
 
     /* Wire data pins. */
     for (int i = 0; i < 8; i++) {
         avr_irq_t *irq_avr = avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ(DATA_PORT), i);
         avr_irq_t *irq_lcd = irq + IRQ_GLCD_D0 + i;
-
-        avr_connect_irq(irq_avr, irq_lcd);
         avr_connect_irq(irq_lcd, irq_avr);
     }
 
     /* And all others. */
-    avr_connect_irq(avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('E'), 2), irq + IRQ_GLCD_CS1);
-    avr_connect_irq(avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('E'), 3), irq + IRQ_GLCD_CS2);
-    avr_connect_irq(avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('E'), 4), irq + IRQ_GLCD_RS);
-    avr_connect_irq(avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('E'), 5), irq + IRQ_GLCD_RW);
     avr_connect_irq(avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('E'), 6), irq + IRQ_GLCD_E);
     avr_connect_irq(avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('E'), 7), irq + IRQ_GLCD_RST);
 }
