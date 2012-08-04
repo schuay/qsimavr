@@ -50,7 +50,7 @@ GlcdLogic::GlcdLogic()
     avr = NULL;
     irq = NULL;
 
-    pinstate = 0;
+    pinESet = false;
 
     QObject::connect(&chip1, SIGNAL(transmit(uint8_t)),
                      this, SLOT(transmit(uint8_t)), Qt::DirectConnection);
@@ -115,24 +115,26 @@ void GlcdLogic::pinChangedHook(struct avr_irq_t *irq, uint32_t value, void *para
 
 void GlcdLogic::pinChanged(avr_irq_t *irq, uint32_t value)
 {
-    bool pinEChanged = false;
-
-    /* Timing checks. */
-    if (irq->irq == IRQ_GLCD_E) {
-        if (lastEChange + cyclesELowHigh > avr->cycle) {
-            qDebug("GLCD: Minimum E high/low level width exceeded.");
-        }
-        lastEChange = avr->cycle;
-
-        pinEChanged = (value != ((pinstate >> IRQ_GLCD_E) & 0x01));
-    }
-
-    /* Update our internal pin state. */
-    pinstate = (pinstate & ~_BV(irq->irq)) | (value << irq->irq);
-
     if (reentrant) {
         return;
     }
+
+    /* We only care about E, the rest is reconstructed. */
+    if (irq->irq != IRQ_GLCD_E) {
+        return;
+    }
+
+    /* Timing checks. */
+    if (lastEChange + cyclesELowHigh > avr->cycle) {
+        qDebug("GLCD: Minimum E high/low level width exceeded.");
+    }
+    lastEChange = avr->cycle;
+
+    /* Update our internal pin state. */
+    bool pinEChanged = (value != 0) != pinESet;
+    pinESet = (value != 0);
+
+    uint16_t pinstate = reconstructPins();
 
     /* Process command if E just changed. */
     if (pinEChanged) {
@@ -145,6 +147,29 @@ void GlcdLogic::pinChanged(avr_irq_t *irq, uint32_t value)
         }
         reentrant = false;
     }
+}
+
+uint16_t GlcdLogic::reconstructPins()
+{
+    avr_ioport_state_t state;
+    if (avr_ioctl(avr, AVR_IOCTL_IOPORT_GETSTATE(DATA_PORT), &state) != 0) {
+        qDebug("GLCD: avr_ioctl failed");
+    }
+    const uint8_t porta = state.port;
+    if (avr_ioctl(avr, AVR_IOCTL_IOPORT_GETSTATE('E'), &state) != 0) {
+        qDebug("GLCD: avr_ioctl failed");
+    }
+    const uint8_t porte = state.port;
+
+    uint16_t pins = porta;
+    pins |= ((porte >> 2) & 1) << IRQ_GLCD_CS1;
+    pins |= ((porte >> 3) & 1) << IRQ_GLCD_CS2;
+    pins |= ((porte >> 4) & 1) << IRQ_GLCD_RS;
+    pins |= ((porte >> 5) & 1) << IRQ_GLCD_RW;
+    pins |= ((porte >> 6) & 1) << IRQ_GLCD_E;
+    pins |= ((porte >> 7) & 1) << IRQ_GLCD_RST;
+
+    return pins;
 }
 
 void GlcdLogic::transmit(uint8_t data)

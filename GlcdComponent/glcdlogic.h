@@ -39,6 +39,8 @@ private slots:
     void transmit(uint8_t data);
 
 private:
+    uint16_t reconstructPins();
+
     void pinChanged(struct avr_irq_t * irq, uint32_t value);
     static void pinChangedHook(struct avr_irq_t *irq, uint32_t value, void *param);
 
@@ -46,8 +48,7 @@ private:
     avr_t *avr;
     avr_irq_t *irq;
 
-    /** A bitfield representing the current pin state. */
-    uint16_t pinstate;
+    bool pinESet;
 
     /**
      * The GLCD contains two identical controller chips;
