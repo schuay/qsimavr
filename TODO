@@ -1,0 +1,3 @@
+* Wrap all simavr functions used by plugins in SimAVR class (this also simplifies callback hooks)
+* configuration for MCU/FREQ
+* GLCD status read
