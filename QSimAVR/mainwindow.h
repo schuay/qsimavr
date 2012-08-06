@@ -24,7 +24,6 @@
 #include <QMainWindow>
 #include <QSharedPointer>
 
-#include "component.h"
 #include "pluginmanager.h"
 #include "recentfiles.h"
 #include "simavr.h"
@@ -67,18 +66,7 @@ private: /* Variables. */
     Ui::MainWindow *ui;
 
     PluginManager pluginManager;
-    /**
-     * The simulation instance.
-     */
     QSharedPointer<SimAVR> sim;
-
-    /**
-     * A list of all enabled plugin gui components.
-     * This will need to be touched in the future (for example, if disabling plugins @ runtime
-     * should be  supported).
-     */
-    QList<QSharedPointer<ComponentGui> > plugins;
-
     QSharedPointer<RecentFiles> recent;
 
     QAction *pauseAction;
