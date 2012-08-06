@@ -21,6 +21,7 @@
 
 #include <QDir>
 #include <QLibrary>
+#include <QMdiSubWindow>
 
 #include "QsLog.h"
 
@@ -70,7 +71,14 @@ void PluginManager::connectGui(QMdiArea *mdiArea)
         }
 
         QWidget *widget = plugin.gui->widget();
-        mdiArea->addSubWindow(widget, Qt::CustomizeWindowHint | Qt::WindowTitleHint);
+        QMdiSubWindow *w = mdiArea->addSubWindow(
+                    widget, Qt::CustomizeWindowHint | Qt::WindowTitleHint);
+
+        /* Disable both the sizable window borders and the default system menu
+         * (which still contains a 'Size' entry). */
+        w->setFixedSize(w->sizeHint());
+        w->setSystemMenu(NULL);;
+
         widget->show();
     }
 }
