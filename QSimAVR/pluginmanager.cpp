@@ -70,7 +70,7 @@ void PluginManager::connectGui(QMdiArea *mdiArea)
         }
 
         QWidget *widget = plugin.gui->widget();
-        mdiArea->addSubWindow(widget);
+        mdiArea->addSubWindow(widget, Qt::CustomizeWindowHint | Qt::WindowTitleHint);
         widget->show();
     }
 }
