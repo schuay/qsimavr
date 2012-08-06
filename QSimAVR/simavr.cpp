@@ -35,36 +35,15 @@ SimAVR::SimAVR() : avr(NULL)
 SimAVR::~SimAVR()
 {
     if (avr) {
-        disconnectPlugins();
+        emit firmwareUnloading(avr);
         avr_terminate(avr);
-    }
-
-    plugins.clear();
-}
-
-void SimAVR::registerPlugin(QSharedPointer<ComponentLogic> plugin)
-{
-    plugins.append(plugin);
-}
-
-void SimAVR::disconnectPlugins()
-{
-    foreach (QSharedPointer<ComponentLogic> plugin, plugins) {
-        plugin->disconnect();
-    }
-}
-
-void SimAVR::connectPlugins()
-{
-    foreach (QSharedPointer<ComponentLogic> plugin, plugins) {
-        plugin->connect(avr);
     }
 }
 
 void SimAVR::load(const QString &filename)
 {
     if (avr) {
-        disconnectPlugins();
+        emit firmwareUnloading(avr);
         avr_terminate(avr);
         avr = NULL;
     }
@@ -81,7 +60,7 @@ void SimAVR::load(const QString &filename)
 
     avr_load_firmware(avr, &firmware);
 
-    connectPlugins();
+    emit firmwareLoaded(avr);
 }
 
 void SimAVR::run()

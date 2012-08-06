@@ -54,7 +54,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     pluginManager.load();
     pluginManager.connectGui(ui->mdiArea);
-    pluginManager.connectSim(sim);
 }
 
 void MainWindow::setupToolbar()
@@ -108,10 +107,18 @@ void MainWindow::createSim()
             this, SLOT(restartSimulation()));
     connect(attachAction, SIGNAL(triggered()),
             sim.data(), SLOT(attachGdb()), Qt::QueuedConnection);
+
     connect(this, SIGNAL(stopSimulation()),
             sim.data(), SLOT(stopSimulation()));
+
     connect(sim.data(), SIGNAL(simulationStateChanged(SimulationState)),
             this, SLOT(simulationStateChanged(SimulationState)), Qt::QueuedConnection);
+
+    connect(sim.data(), SIGNAL(firmwareLoaded(avr_t*)),
+            &pluginManager, SLOT(connectSim(avr_t*)), Qt::DirectConnection);
+    connect(sim.data(), SIGNAL(firmwareUnloading(avr_t*)),
+            &pluginManager, SLOT(disconnectSim(avr_t*)), Qt::DirectConnection);
+
 }
 
 void MainWindow::loadFirmware()

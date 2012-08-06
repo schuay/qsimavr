@@ -20,14 +20,10 @@
 #ifndef SIMAVR_H
 #define SIMAVR_H
 
-#include <QList>
-#include <QSharedPointer>
 #include <QThread>
 #include <sim_avr.h>
 #include <sim_elf.h>
 #include <sim_irq.h>
-
-#include <component.h>
 
 enum SimulationState {
     Running,
@@ -43,13 +39,16 @@ public:
     SimAVR();
     virtual ~SimAVR();
 
-    void registerPlugin(QSharedPointer<ComponentLogic> plugin);
-
     void load(const QString &filename);
     void run();
 
 signals:
     void simulationStateChanged(SimulationState state);
+
+    /* The following firmware signals are used by the plugin manager
+     * to load/unload plugins. */
+    void firmwareUnloading(avr_t *avr);
+    void firmwareLoaded(avr_t *avr);
 
 public slots:
     void pauseSimulation();
@@ -57,14 +56,8 @@ public slots:
     void attachGdb();
 
 private:
-    void disconnectPlugins();
-    void connectPlugins();
-
-private:
     avr_t *avr;
     elf_firmware_t firmware;
-
-    QList<QSharedPointer<ComponentLogic> > plugins;
 };
 
 #endif // SIMAVR_H

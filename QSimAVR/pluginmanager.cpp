@@ -75,9 +75,16 @@ void PluginManager::connectGui(QMdiArea *mdiArea)
     }
 }
 
-void PluginManager::connectSim(QSharedPointer<SimAVR> sim)
+void PluginManager::connectSim(avr_t *avr)
 {
     foreach(const Component &plugin, plugins) {
-        sim->registerPlugin(plugin.logic);
+        plugin.logic->connect(avr);
+    }
+}
+
+void PluginManager::disconnectSim(avr_t *)
+{
+    foreach(const Component &plugin, plugins) {
+        plugin.logic->disconnect();
     }
 }

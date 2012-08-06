@@ -26,8 +26,10 @@
 #include "component.h"
 #include "simavr.h"
 
-class PluginManager
+class PluginManager : public QObject
 {
+    Q_OBJECT
+
 public:
     PluginManager();
 
@@ -37,7 +39,10 @@ public:
     void load();
 
     void connectGui(QMdiArea *mdiArea);
-    void connectSim(QSharedPointer<SimAVR> sim);
+
+public slots:
+    void connectSim(avr_t *avr);
+    void disconnectSim(avr_t *avr);
 
 private:
     /**
