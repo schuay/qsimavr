@@ -62,6 +62,11 @@ void LcdLogic::disconnect()
         avr_unconnect_irq(ilcd, iavr);
     }
 
+    avr_unconnect_irq(avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('C'), 2),
+                    hd44780.irq + IRQ_HD44780_RS);
+    avr_unconnect_irq(avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('C'), 3),
+                    hd44780.irq + IRQ_HD44780_E);
+
     avr_free_irq(hd44780.irq, IRQ_HD44780_COUNT);
 }
 
