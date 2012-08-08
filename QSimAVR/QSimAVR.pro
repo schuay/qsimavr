@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     QsDebugOutput.cpp \
     pluginmanager.cpp \
     recentfiles.cpp \
-    plugintablemodel.cpp
+    plugintablemodel.cpp \
+    pluginswindow.cpp
 
 HEADERS  += mainwindow.h \
     simavr.h \
@@ -31,9 +32,11 @@ HEADERS  += mainwindow.h \
     QsDebugOutput.h \
     pluginmanager.h \
     recentfiles.h \
-    plugintablemodel.h
+    plugintablemodel.h \
+    pluginswindow.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    pluginswindow.ui
 
 INCLUDEPATH += /usr/include/simavr \
                /usr/include/simavr/avr

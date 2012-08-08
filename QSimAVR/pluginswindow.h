@@ -17,63 +17,31 @@
 
 
 
-#ifndef PLUGINMANAGER_H
-#define PLUGINMANAGER_H
+#ifndef PLUGINSWINDOW_H
+#define PLUGINSWINDOW_H
 
-#include <QList>
-#include <QMdiArea>
+#include <QDialog>
+#include <QScopedPointer>
 
-#include "component.h"
-#include "simavr.h"
+#include "pluginmanager.h"
+#include "plugintablemodel.h"
 
-class PluginManager : public QObject
+namespace Ui {
+class PluginsWindow;
+}
+
+class PluginsWindow : public QDialog
 {
     Q_OBJECT
-
+    
 public:
-    PluginManager();
-
-    /**
-     * Loads all plugins from PLUGINDIR.
-     */
-    void load();
-
-    void connectGui(QMdiArea *mdiArea);
-
-    int count() const;
-    QString name(int index) const;
-    bool enabled(int index) const;
-    bool vcd(int index) const;
-
-    void setEnabled(int index, bool enabled);
-    void setVcd(int index, bool vcd);
-
-
-public slots:
-    void connectSim(avr_t *avr);
-    void disconnectSim(avr_t *avr);
-
+    explicit PluginsWindow(QWidget *parent, PluginManager *manager);
+    ~PluginsWindow();
+    
 private:
-    /**
-     * Attempts to load a plugin from filename.
-     */
-    void load(const QString &filename);
+    Ui::PluginsWindow *ui;
 
-private:
-
-    struct ComponentListEntry
-    {
-        QString name;
-        Component component;
-        bool enabled;
-        bool vcd;
-    };
-
-    QList<ComponentListEntry> plugins;
-
-    /** Keep the current avr instance around so we can reconnect,
-     *  plugins at any time. */
-    avr_t *avr;
+    QScopedPointer<PluginTableModel> model;
 };
 
-#endif // PLUGINMANAGER_H
+#endif // PLUGINSWINDOW_H

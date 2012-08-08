@@ -58,7 +58,7 @@ void PluginManager::load(const QString &filename)
     }
 
     QSharedPointer<ComponentFactory> factory(registerPlugin());
-    ComponentListEntry entry = { lib.fileName(), factory->create(), true, true };
+    ComponentListEntry entry = { lib.fileName(), factory->create(), true, false };
     plugins.append(entry);
 
     QLOG_TRACE() << "Loaded plugin from" << lib.fileName();
@@ -86,15 +86,20 @@ void PluginManager::connectGui(QMdiArea *mdiArea)
 
 void PluginManager::connectSim(avr_t *avr)
 {
+    this->avr = avr;
     foreach(const ComponentListEntry &plugin, plugins) {
-        plugin.component.logic->connect(avr);
+        if (plugin.enabled) {
+            plugin.component.logic->connect(avr);
+        }
     }
 }
 
 void PluginManager::disconnectSim(avr_t *)
 {
     foreach(const ComponentListEntry &plugin, plugins) {
-        plugin.component.logic->disconnect();
+        if (plugin.enabled) {
+            plugin.component.logic->disconnect();
+        }
     }
 }
 
@@ -121,9 +126,17 @@ bool PluginManager::vcd(int index) const
 void PluginManager::setEnabled(int index, bool enabled)
 {
     plugins[index].enabled = enabled;
+    if (enabled) {
+        plugins[index].component.logic->connect(avr);
+        plugins[index].component.gui->widget()->show();
+    } else {
+        plugins[index].component.logic->disconnect();
+        plugins[index].component.gui->widget()->hide();
+    }
 }
 
 void PluginManager::setVcd(int index, bool vcd)
 {
+    QLOG_WARN() << "Not implemented yet.";
     plugins[index].vcd = vcd;
 }

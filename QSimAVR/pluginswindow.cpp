@@ -17,63 +17,20 @@
 
 
 
-#ifndef PLUGINMANAGER_H
-#define PLUGINMANAGER_H
+#include "pluginswindow.h"
+#include "ui_pluginswindow.h"
 
-#include <QList>
-#include <QMdiArea>
-
-#include "component.h"
-#include "simavr.h"
-
-class PluginManager : public QObject
+PluginsWindow::PluginsWindow(QWidget *parent, PluginManager *manager) :
+    QDialog(parent),
+    ui(new Ui::PluginsWindow)
 {
-    Q_OBJECT
+    ui->setupUi(this);
 
-public:
-    PluginManager();
+    model.reset(new PluginTableModel(manager));
+    ui->tableView->setModel(model.data());
+}
 
-    /**
-     * Loads all plugins from PLUGINDIR.
-     */
-    void load();
-
-    void connectGui(QMdiArea *mdiArea);
-
-    int count() const;
-    QString name(int index) const;
-    bool enabled(int index) const;
-    bool vcd(int index) const;
-
-    void setEnabled(int index, bool enabled);
-    void setVcd(int index, bool vcd);
-
-
-public slots:
-    void connectSim(avr_t *avr);
-    void disconnectSim(avr_t *avr);
-
-private:
-    /**
-     * Attempts to load a plugin from filename.
-     */
-    void load(const QString &filename);
-
-private:
-
-    struct ComponentListEntry
-    {
-        QString name;
-        Component component;
-        bool enabled;
-        bool vcd;
-    };
-
-    QList<ComponentListEntry> plugins;
-
-    /** Keep the current avr instance around so we can reconnect,
-     *  plugins at any time. */
-    avr_t *avr;
-};
-
-#endif // PLUGINMANAGER_H
+PluginsWindow::~PluginsWindow()
+{
+    delete ui;
+}

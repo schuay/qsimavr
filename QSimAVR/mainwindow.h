@@ -50,6 +50,7 @@ private slots:
     void loadFirmware();
 
     void openRecentFile();
+    void configurePlugins();
 
     void simulationStateChanged(SimulationState state);
     void restartSimulation();

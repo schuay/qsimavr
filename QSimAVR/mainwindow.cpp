@@ -26,6 +26,7 @@
 #include <QLabel>
 #include <QMdiSubWindow>
 
+#include "pluginswindow.h"
 #include "QsLog.h"
 
 /* TODO
@@ -82,6 +83,7 @@ void MainWindow::setupMenu()
 {
     connect(ui->actionLoad_Firmware, SIGNAL(triggered()), this, SLOT(loadFirmware()));
     connect(ui->actionQuit, SIGNAL(triggered()), this, SLOT(close()));
+    connect(ui->actionConfigure_Plugins, SIGNAL(triggered()), this, SLOT(configurePlugins()));
 
     /* Setup recent file actions. */
     QList<QAction *> actions;
@@ -150,6 +152,12 @@ void MainWindow::openRecentFile()
     if (action) {
         loadFirmware(action->data().toString());
     }
+}
+
+void MainWindow::configurePlugins()
+{
+    QScopedPointer<PluginsWindow> w(new PluginsWindow(this, &pluginManager));
+    w->exec();
 }
 
 void MainWindow::terminateSim()

@@ -51,16 +51,8 @@
     <property name="title">
      <string>Settings</string>
     </property>
-    <widget class="QMenu" name="menuPlugins">
-     <property name="title">
-      <string>Plugins</string>
-     </property>
-     <addaction name="action_Available"/>
-     <addaction name="action_Plugins"/>
-     <addaction name="action_Here"/>
-    </widget>
-    <addaction name="menuPlugins"/>
     <addaction name="actionConfigure_QSimAVR"/>
+    <addaction name="actionConfigure_Plugins"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuSettings"/>
@@ -139,6 +131,11 @@
   <action name="actionLoad_Firmware">
    <property name="text">
     <string>Load Firmware...</string>
+   </property>
+  </action>
+  <action name="actionConfigure_Plugins">
+   <property name="text">
+    <string>Configure Plugins...</string>
    </property>
   </action>
  </widget>
