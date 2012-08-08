@@ -58,19 +58,20 @@ void PluginManager::load(const QString &filename)
     }
 
     QSharedPointer<ComponentFactory> factory(registerPlugin());
-    plugins.append(factory->create());
+    ComponentListEntry entry = { lib.fileName(), factory->create(), true, true };
+    plugins.append(entry);
 
     QLOG_TRACE() << "Loaded plugin from" << lib.fileName();
 }
 
 void PluginManager::connectGui(QMdiArea *mdiArea)
 {
-    foreach(const Component &plugin, plugins) {
-        if (plugin.gui.isNull()) {
+    foreach(const ComponentListEntry &plugin, plugins) {
+        if (plugin.component.gui.isNull()) {
             continue;
         }
 
-        QWidget *widget = plugin.gui->widget();
+        QWidget *widget = plugin.component.gui->widget();
         QMdiSubWindow *w = mdiArea->addSubWindow(
                     widget, Qt::CustomizeWindowHint | Qt::WindowTitleHint);
 
@@ -85,14 +86,44 @@ void PluginManager::connectGui(QMdiArea *mdiArea)
 
 void PluginManager::connectSim(avr_t *avr)
 {
-    foreach(const Component &plugin, plugins) {
-        plugin.logic->connect(avr);
+    foreach(const ComponentListEntry &plugin, plugins) {
+        plugin.component.logic->connect(avr);
     }
 }
 
 void PluginManager::disconnectSim(avr_t *)
 {
-    foreach(const Component &plugin, plugins) {
-        plugin.logic->disconnect();
+    foreach(const ComponentListEntry &plugin, plugins) {
+        plugin.component.logic->disconnect();
     }
+}
+
+int PluginManager::count() const
+{
+   return plugins.count() ;
+}
+
+QString PluginManager::name(int index) const
+{
+    return plugins[index].name;
+}
+
+bool PluginManager::enabled(int index) const
+{
+    return plugins[index].enabled;
+}
+
+bool PluginManager::vcd(int index) const
+{
+    return plugins[index].vcd;
+}
+
+void PluginManager::setEnabled(int index, bool enabled)
+{
+    plugins[index].enabled = enabled;
+}
+
+void PluginManager::setVcd(int index, bool vcd)
+{
+    plugins[index].vcd = vcd;
 }

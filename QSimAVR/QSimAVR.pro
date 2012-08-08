@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     QsLog.cpp \
     QsDebugOutput.cpp \
     pluginmanager.cpp \
-    recentfiles.cpp
+    recentfiles.cpp \
+    plugintablemodel.cpp
 
 HEADERS  += mainwindow.h \
     simavr.h \
@@ -29,7 +30,8 @@ HEADERS  += mainwindow.h \
     QsLog.h \
     QsDebugOutput.h \
     pluginmanager.h \
-    recentfiles.h
+    recentfiles.h \
+    plugintablemodel.h
 
 FORMS    += mainwindow.ui
 

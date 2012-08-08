@@ -17,59 +17,34 @@
 
 
 
-#ifndef PLUGINMANAGER_H
-#define PLUGINMANAGER_H
+#ifndef PLUGINTABLEMODEL_H
+#define PLUGINTABLEMODEL_H
 
-#include <QList>
-#include <QMdiArea>
+#include <QAbstractTableModel>
 
-#include "component.h"
-#include "simavr.h"
+#include "pluginmanager.h"
 
-class PluginManager : public QObject
+class PluginTableModel : public QAbstractTableModel
 {
-    Q_OBJECT
-
 public:
-    PluginManager();
+    PluginTableModel(PluginManager *manager);
 
-    /**
-     * Loads all plugins from PLUGINDIR.
-     */
-    void load();
-
-    void connectGui(QMdiArea *mdiArea);
-
-    int count() const;
-    QString name(int index) const;
-    bool enabled(int index) const;
-    bool vcd(int index) const;
-
-    void setEnabled(int index, bool enabled);
-    void setVcd(int index, bool vcd);
-
-
-public slots:
-    void connectSim(avr_t *avr);
-    void disconnectSim(avr_t *avr);
+    int rowCount(const QModelIndex &parent) const;
+    int columnCount(const QModelIndex &parent) const;
+    QVariant data(const QModelIndex &index, int role) const;
+    QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+    bool setData(const QModelIndex &index, const QVariant &value, int role);
+    Qt::ItemFlags flags(const QModelIndex &index) const;
 
 private:
-    /**
-     * Attempts to load a plugin from filename.
-     */
-    void load(const QString &filename);
+    PluginManager *manager;
 
-private:
-
-    struct ComponentListEntry
-    {
-        QString name;
-        Component component;
-        bool enabled;
-        bool vcd;
+    enum {
+        COL_NAME,
+        COL_ENABLED,
+        COL_VCD,
+        COL_COUNT
     };
-
-    QList<ComponentListEntry> plugins;
 };
 
-#endif // PLUGINMANAGER_H
+#endif // PLUGINTABLEMODEL_H
