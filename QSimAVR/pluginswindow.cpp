@@ -28,6 +28,8 @@ PluginsWindow::PluginsWindow(QWidget *parent, PluginManager *manager) :
 
     model.reset(new PluginTableModel(manager));
     ui->tableView->setModel(model.data());
+    ui->tableView->resizeColumnsToContents();
+    ui->tableView->horizontalHeader()->setStretchLastSection(true);
 }
 
 PluginsWindow::~PluginsWindow()
