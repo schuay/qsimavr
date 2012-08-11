@@ -11,12 +11,14 @@ DEFINES += GLCDCOMPONENT_LIBRARY
 
 SOURCES += glcdfactory.cpp \
     glcdlogic.cpp \
-    nt7108.cpp
+    nt7108.cpp \
+    glcdgui.cpp
 
 HEADERS += glcdfactory.h\
         GlcdComponent_global.h \
     glcdlogic.h \
-    nt7108.h
+    nt7108.h \
+    glcdgui.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN
@@ -44,3 +46,6 @@ LIBS += -lsimavr
 
 QMAKE_CFLAGS_DEBUG += -std=gnu99
 QMAKE_CFLAGS_RELEASE += -std=gnu99
+
+FORMS += \
+    glcdgui.ui
