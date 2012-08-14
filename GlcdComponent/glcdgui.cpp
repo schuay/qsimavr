@@ -20,14 +20,31 @@
 #include "glcdgui.h"
 #include "ui_glcdgui.h"
 
+#include <QResizeEvent>
+
 GlcdGui::GlcdGui(QWidget *parent) :
     QWidget(parent),
+    scene(this),
     ui(new Ui::GlcdGui)
 {
     ui->setupUi(this);
+    ui->graphicsView->setScene(&scene);
+    ui->graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 }
 
 GlcdGui::~GlcdGui()
 {
     delete ui;
+}
+
+void GlcdGui::show()
+{
+    QWidget::show();
+    ui->graphicsView->fitInView(scene.sceneRect());
+}
+
+QWidget *GlcdGui::widget()
+{
+    return this;
 }

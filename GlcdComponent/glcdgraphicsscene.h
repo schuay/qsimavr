@@ -17,20 +17,19 @@
 
 
 
-#include "glcdfactory.h"
+#ifndef GLCDGRAPHICSSCENE_H
+#define GLCDGRAPHICSSCENE_H
 
-#include "glcdlogic.h"
-#include "glcdgui.h"
+#include <QGraphicsScene>
+#include <QVector>
 
-GlcdFactory::GlcdFactory()
+class GlcdGraphicsScene : public QGraphicsScene
 {
-}
+public:
+    explicit GlcdGraphicsScene(QObject *parent);
 
-Component GlcdFactory::create()
-{
-    QSharedPointer<GlcdGui> gui = QSharedPointer<GlcdGui>(new GlcdGui());
-    QSharedPointer<GlcdLogic> logic = QSharedPointer<GlcdLogic>(new GlcdLogic());
-    Component component = { gui, logic };
+private:
+    QVector<QGraphicsRectItem *> pixels;
+};
 
-    return component;
-}
+#endif // GLCDGRAPHICSSCENE_H

@@ -20,21 +20,29 @@
 #ifndef GLCDGUI_H
 #define GLCDGUI_H
 
+#include <component.h>
 #include <QWidget>
+
+#include "glcdgraphicsscene.h"
 
 namespace Ui {
 class GlcdGui;
 }
 
-class GlcdGui : public QWidget
+class GlcdGui : public QWidget, public ComponentGui
 {
     Q_OBJECT
     
 public:
     explicit GlcdGui(QWidget *parent = 0);
     ~GlcdGui();
+
+    void show();
+    QWidget *widget();
     
 private:
+    GlcdGraphicsScene scene;
+
     Ui::GlcdGui *ui;
 };
 

@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>256</width>
-    <height>128</height>
+    <width>349</width>
+    <height>228</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Glcd</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QGraphicsView" name="graphicsView"/>
    </item>

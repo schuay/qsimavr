@@ -17,20 +17,25 @@
 
 
 
-#include "glcdfactory.h"
+#include "glcdgraphicsscene.h"
 
-#include "glcdlogic.h"
-#include "glcdgui.h"
+#define WIDTH (128)
+#define HEIGHT (64)
+#define SCALE (2)
 
-GlcdFactory::GlcdFactory()
+#define X(index) (index % WIDTH)
+#define Y(index) (index / WIDTH)
+
+GlcdGraphicsScene::GlcdGraphicsScene(QObject *parent) : QGraphicsScene(parent)
 {
-}
+    setSceneRect(0, 0, WIDTH * SCALE, HEIGHT * SCALE);
 
-Component GlcdFactory::create()
-{
-    QSharedPointer<GlcdGui> gui = QSharedPointer<GlcdGui>(new GlcdGui());
-    QSharedPointer<GlcdLogic> logic = QSharedPointer<GlcdLogic>(new GlcdLogic());
-    Component component = { gui, logic };
-
-    return component;
+    for (int i = 0; i < WIDTH * HEIGHT; i++) {
+        pixels.append(addRect(X(i) * SCALE,
+                              Y(i) * SCALE,
+                              SCALE,
+                              SCALE,
+                              QPen(Qt::NoPen),
+                              QBrush(Qt::green)));
+    }
 }
