@@ -10,3 +10,4 @@ moc_*
 qsimavr
 *.elf
 *.axf
+build/
