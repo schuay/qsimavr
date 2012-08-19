@@ -31,7 +31,7 @@ set(LIBELF_LIBRARIES
 )
 
 add_subdirectory(EepromComponent)
-#add_subdirectory(Examples)
+add_subdirectory(Examples)
 add_subdirectory(GlcdComponent)
 add_subdirectory(LcdComponent)
 add_subdirectory(LedButtonsComponent)
