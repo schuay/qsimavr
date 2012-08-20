@@ -142,7 +142,9 @@ void NT7108::readDisplayData()
 void NT7108::writeDisplayData(uint8_t data)
 {
     DEBUG("GLCD: %s (0x%02x)", __PRETTY_FUNCTION__, data);
-    ram[incrementAddress()] = data;
+    uint8_t aptr = incrementAddress();
+    ram[aptr] = data;
+    emit pageChanged(QPoint(aptr % WIDTH, aptr / WIDTH), data);
 }
 
 void NT7108::readStatus()
@@ -185,7 +187,7 @@ void NT7108::displayOnOff(uint8_t on)
 uint8_t NT7108::incrementAddress()
 {
     /* TODO: find out how this really increments. */
-    uint8_t addr = xaddr * PX_PER_PAGE + yaddr;
+    uint8_t addr = xaddr * WIDTH + yaddr;
     yaddr = (yaddr + 1) % 64;
     return addr;
 }

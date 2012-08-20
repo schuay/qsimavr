@@ -21,6 +21,7 @@
 #define NT7108_H
 
 #include <QObject>
+#include <QPoint>
 #include <sim_avr.h>
 
 enum {
@@ -62,6 +63,13 @@ public:
 
 signals:
     void transmit(uint8_t data);
+
+    /**
+     * Signalled whenever data is written to the display ram.
+     * The x coordinate represents the horizontal position (pixel-wise, 0-64)
+     * and the y coordinate the vertical position (page-wise, 0-7).
+     */
+    void pageChanged(QPoint coords, uint8_t value);
 
 private:
     void readDisplayData();
