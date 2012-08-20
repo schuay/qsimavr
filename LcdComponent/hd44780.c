@@ -153,7 +153,7 @@ hd44780_write_command(
         // Cursor display shift
         case 4: {   // 0 0 0 1 S/C R/L x x
             int right = (b->datapins & (1 << 2)) != 0;
-            int offset = right ? 1 : -1;
+            int offset = right ? -1 : 1;
             if (b->datapins & (1 << 3)) { /* Display shift. */
                 b->shift = (b->shift + offset + HD44780_ROW_LENGTH) % HD44780_ROW_LENGTH;
             } else { /* Cursor shift. */
