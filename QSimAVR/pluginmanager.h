@@ -32,6 +32,7 @@ class PluginManager : public QObject
 
 public:
     PluginManager();
+    ~PluginManager();
 
     /**
      * Loads all plugins from PLUGINDIR.

@@ -23,13 +23,27 @@
 #include <QFileInfo>
 #include <QLibrary>
 #include <QMdiSubWindow>
+#include <QSettings>
 
 #include "QsLog.h"
 
 #define PLUGINDIR ("plugins")
 
+#define KEY_ENABLED(name) (QString("Plugins/%1_Enabled").arg(name))
+#define KEY_VCD(name) (QString("Plugins/%1_VCD").arg(name))
+
 PluginManager::PluginManager() : avr(NULL)
 {
+}
+
+PluginManager::~PluginManager()
+{
+    QSettings settings;
+    foreach (const ComponentListEntry &entry, plugins) {
+        settings.setValue(KEY_ENABLED(entry.name), entry.enabled);
+        settings.setValue(KEY_VCD(entry.name), entry.vcd);
+    }
+    settings.sync();
 }
 
 void PluginManager::load(QThread *t)
@@ -58,8 +72,14 @@ void PluginManager::load(QThread *t, const QString &filename)
         return;
     }
 
+    QSettings settings;
+
+    const QString name = QFileInfo(lib.fileName()).baseName();
     QSharedPointer<ComponentFactory> factory(registerPlugin());
-    ComponentListEntry entry = { QFileInfo(lib.fileName()).baseName(), factory->create(), true, false };
+    ComponentListEntry entry = { name,
+                                 factory->create(),
+                                 settings.value(KEY_ENABLED(name), true).toBool(),
+                                 settings.value(KEY_VCD(name), false).toBool() };
     plugins.append(entry);
     entry.component.logic->moveToThread(t);
 
@@ -82,7 +102,9 @@ void PluginManager::connectGui(QMdiArea *mdiArea)
         w->setFixedSize(w->sizeHint());
         w->setSystemMenu(NULL);;
 
-        widget->show();
+        if (!plugin.enabled) {
+            widget->hide();
+        }
     }
 }
 
