@@ -56,8 +56,13 @@ public slots:
     void attachGdb();
 
 private:
+    void attachGdbInternal();
+
+private:
     avr_t *avr;
     elf_firmware_t firmware;
+
+    bool gdb;
 };
 
 #endif // SIMAVR_H

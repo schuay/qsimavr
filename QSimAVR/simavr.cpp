@@ -28,7 +28,9 @@
 #define FREQUENCY (16000000)
 #define MMCU ("atmega1280")
 
-SimAVR::SimAVR() : avr(NULL)
+SimAVR::SimAVR() :
+    avr(NULL),
+    gdb(false)
 {
 }
 
@@ -69,8 +71,12 @@ void SimAVR::run()
         return;
     }
 
-    avr->state = cpu_Running;
-    emit simulationStateChanged(Running);
+    if (!gdb) {
+        avr->state = cpu_Running;
+        emit simulationStateChanged(Running);
+    } else {
+        attachGdbInternal();
+    }
 
     avr_reset(avr);
 
@@ -104,10 +110,18 @@ void SimAVR::stopSimulation()
 
 void SimAVR::attachGdb()
 {
+    /* TODO: Expand this further. */
+    gdb = true;
+
     if (!avr) {
         return;
     }
 
+    attachGdbInternal();
+}
+
+void SimAVR::attachGdbInternal()
+{
     /* Only init GDB once. */
     if (avr->gdb_port != GDB_PORT) {
         avr->gdb_port = GDB_PORT;
