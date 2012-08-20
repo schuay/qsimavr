@@ -65,6 +65,10 @@ void SimAVR::load(const QString &filename)
 
 void SimAVR::run()
 {
+    if (!avr) {
+        return;
+    }
+
     avr->state = cpu_Running;
     emit simulationStateChanged(Running);
 
@@ -80,18 +84,30 @@ void SimAVR::run()
 
 void SimAVR::pauseSimulation()
 {
+    if (!avr) {
+        return;
+    }
+
     avr->state = avr->state == cpu_Stopped ? cpu_Running: cpu_Stopped;
     emit simulationStateChanged(avr->state == cpu_Running ? Running : Paused);
 }
 
 void SimAVR::stopSimulation()
 {
+    if (!avr) {
+        return;
+    }
+
     avr->state = cpu_Done;
     emit simulationStateChanged(Done);
 }
 
 void SimAVR::attachGdb()
 {
+    if (!avr) {
+        return;
+    }
+
     /* Only init GDB once. */
     if (avr->gdb_port != GDB_PORT) {
         avr->gdb_port = GDB_PORT;
