@@ -25,9 +25,12 @@
 #include <QFileDialog>
 #include <QLabel>
 #include <QMdiSubWindow>
+#include <QSettings>
 
 #include "pluginswindow.h"
 #include "QsLog.h"
+
+#define KEY_GEOMETRY ("Geometry")
 
 /* TODO
  * Separate logic and ui(?)
@@ -54,6 +57,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     pluginManager.load(sim.data());
     pluginManager.connectGui(ui->mdiArea);
+
+    QSettings settings;
+    restoreGeometry(settings.value(KEY_GEOMETRY).toByteArray());
 }
 
 void MainWindow::setupToolbar()
@@ -120,6 +126,13 @@ void MainWindow::createSim()
     connect(sim.data(), SIGNAL(firmwareUnloading(avr_t*)),
             &pluginManager, SLOT(disconnectSim(avr_t*)), Qt::DirectConnection);
 
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    QSettings settings;
+    settings.setValue(KEY_GEOMETRY, saveGeometry());
+    QMainWindow::closeEvent(event);
 }
 
 void MainWindow::loadFirmware()

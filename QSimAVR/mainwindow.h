@@ -55,6 +55,9 @@ private slots:
     void simulationStateChanged(SimulationState state);
     void restartSimulation();
 
+protected:
+    void closeEvent(QCloseEvent *event);
+
 private: /* Methods. */
     void setupToolbar();
     void setupMenu();
