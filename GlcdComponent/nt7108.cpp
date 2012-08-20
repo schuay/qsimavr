@@ -186,6 +186,9 @@ int NT7108::incrementAddress()
 {
     /* TODO: find out how this really increments. */
     int addr = xaddr * NT7108_WIDTH + yaddr;
-    yaddr = (yaddr + 1) % 64;
+    yaddr = (yaddr + 1) % NT7108_WIDTH;
+    if (yaddr == 0) { /* Rollover. */
+        xaddr = (xaddr + 1) % (NT7108_HEIGHT / NT7108_PX_PER_PAGE);
+    }
     return addr;
 }
