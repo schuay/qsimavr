@@ -14,6 +14,9 @@
  * $Id: hd44780.c 2002 2009-06-25 20:21:16Z joerg_wunsch $
  */
 
+#undef F_CPU
+#define F_CPU 16000000
+
 #include "avr_hd44780_conf.h"
 
 #include <stdbool.h>
