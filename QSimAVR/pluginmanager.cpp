@@ -20,6 +20,7 @@
 #include "pluginmanager.h"
 
 #include <QDir>
+#include <QFileInfo>
 #include <QLibrary>
 #include <QMdiSubWindow>
 
@@ -58,7 +59,7 @@ void PluginManager::load(QThread *t, const QString &filename)
     }
 
     QSharedPointer<ComponentFactory> factory(registerPlugin());
-    ComponentListEntry entry = { lib.fileName(), factory->create(), true, false };
+    ComponentListEntry entry = { QFileInfo(lib.fileName()).baseName(), factory->create(), true, false };
     plugins.append(entry);
     entry.component.logic->moveToThread(t);
 
