@@ -129,10 +129,14 @@ void PluginManager::setEnabled(int index, bool enabled)
     plugins[index].enabled = enabled;
     if (enabled) {
         plugins[index].component.logic->connect(avr);
-        plugins[index].component.gui->widget()->show();
+        if (plugins[index].component.gui) {
+            plugins[index].component.gui->widget()->show();
+        }
     } else {
         plugins[index].component.logic->disconnect();
-        plugins[index].component.gui->widget()->hide();
+        if (plugins[index].component.gui) {
+            plugins[index].component.gui->widget()->hide();
+        }
     }
 }
 
