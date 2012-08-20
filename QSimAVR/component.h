@@ -45,8 +45,8 @@ public:
     ComponentLogic() : connected(false) { }
     ComponentLogic(QObject *parent) : QObject(parent), connected(false) { }
 
-    virtual void connect(avr_t *avr) = 0;
-    virtual void disconnect() = 0;
+    virtual void wire(avr_t *avr) = 0;
+    virtual void unwire() = 0;
     virtual ~ComponentLogic() { }
 
 protected:

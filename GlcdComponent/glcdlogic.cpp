@@ -62,7 +62,7 @@ GlcdLogic::GlcdLogic()
                      this, SLOT(chipPageChanged(QPoint,uint8_t)), Qt::DirectConnection);
 }
 
-void GlcdLogic::connect(avr_t *avr)
+void GlcdLogic::wire(avr_t *avr)
 {
     this->avr = avr;
 
@@ -97,7 +97,7 @@ void GlcdLogic::connect(avr_t *avr)
     connected = true;
 }
 
-void GlcdLogic::disconnect()
+void GlcdLogic::unwire()
 {
     if (!connected) {
         return;

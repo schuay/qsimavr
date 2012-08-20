@@ -28,8 +28,8 @@ class RtcLogic : public ComponentLogic, public TwiSlave
 public:
     RtcLogic();
 
-    void connect(avr_t *avr);
-    void disconnect();
+    void wire(avr_t *avr);
+    void unwire();
 
     uint8_t transmitByte();
     bool matchesAddress(uint8_t address);

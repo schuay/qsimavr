@@ -35,8 +35,8 @@ class LedButtonsLogic : public ComponentLogic
 public:
     explicit LedButtonsLogic(QObject *parent = 0);
 
-    void connect(avr_t *avr);
-    void disconnect();
+    void wire(avr_t *avr);
+    void unwire();
 
 signals:
     void ledChanged(QChar port, uint8_t pin, bool on);

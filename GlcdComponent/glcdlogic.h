@@ -32,8 +32,8 @@ class GlcdLogic : public ComponentLogic
 public:
     GlcdLogic();
 
-    void connect(avr_t *avr);
-    void disconnect();
+    void wire(avr_t *avr);
+    void unwire();
 
 signals:
     void pageChanged(QPoint coords, uint8_t value);

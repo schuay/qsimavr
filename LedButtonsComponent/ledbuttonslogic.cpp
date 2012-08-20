@@ -38,7 +38,7 @@ LedButtonsLogic::LedButtonsLogic(QObject *parent) :
 {
 }
 
-void LedButtonsLogic::connect(avr_t *avr)
+void LedButtonsLogic::wire(avr_t *avr)
 {
     this->avr = avr;
 
@@ -81,7 +81,7 @@ void LedButtonsLogic::connect(avr_t *avr)
     connected = true;
 }
 
-void LedButtonsLogic::disconnect()
+void LedButtonsLogic::unwire()
 {
     if (!connected) {
         return;

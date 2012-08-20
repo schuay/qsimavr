@@ -8,7 +8,7 @@ TwiComponent::TwiComponent(TwiSlave *slave) : slave(slave)
 {
 }
 
-void TwiComponent::connect(avr_t *avr)
+void TwiComponent::wire(avr_t *avr)
 {
     this->avr = avr;
 
@@ -21,7 +21,7 @@ void TwiComponent::connect(avr_t *avr)
     avr_connect_irq(avr_io_getirq(avr, AVR_IOCTL_TWI_GETIRQ(0), TWI_IRQ_MOSI), irq + TWI_IRQ_MOSI);
 }
 
-void TwiComponent::disconnect()
+void TwiComponent::unwire()
 {
     avr_unconnect_irq(irq + TWI_IRQ_MISO, avr_io_getirq(avr, AVR_IOCTL_TWI_GETIRQ(0), TWI_IRQ_MISO));
     avr_unconnect_irq(avr_io_getirq(avr, AVR_IOCTL_TWI_GETIRQ(0), TWI_IRQ_MOSI), irq + TWI_IRQ_MOSI);

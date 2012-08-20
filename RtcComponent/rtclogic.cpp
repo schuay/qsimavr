@@ -200,23 +200,23 @@ void RtcLogic::resetHook(avr_io_t *io)
     avr_cycle_timer_register_usec(io->avr, USECS_PER_SEC, RtcLogic::incrementSecondsHook, p->instance);
 }
 
-void RtcLogic::connect(avr_t *avr)
+void RtcLogic::wire(avr_t *avr)
 {
     this->avr = avr;
     avr_register_io(avr, &io.io);
 
-    twi.connect(avr);
+    twi.wire(avr);
 
     connected = true;
 }
 
-void RtcLogic::disconnect()
+void RtcLogic::unwire()
 {
     if (!connected) {
         return;
     }
 
-    twi.disconnect();
+    twi.unwire();
 
     connected = false;
 }

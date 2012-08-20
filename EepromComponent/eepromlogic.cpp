@@ -32,20 +32,20 @@ EepromLogic::EepromLogic() : twi(this), addressPointer(0)
     eeprom.fill(0xff, EEPROM_SIZE);
 }
 
-void EepromLogic::connect(avr_t *avr)
+void EepromLogic::wire(avr_t *avr)
 {
-    twi.connect(avr);
+    twi.wire(avr);
 
     connected = true;
 }
 
-void EepromLogic::disconnect()
+void EepromLogic::unwire()
 {
     if (!connected) {
         return;
     }
 
-    twi.disconnect();
+    twi.unwire();
 
     connected = false;
 }
