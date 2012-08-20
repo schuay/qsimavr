@@ -35,8 +35,12 @@ public:
     void connect(avr_t *avr);
     void disconnect();
 
+signals:
+    void pageChanged(QPoint coords, uint8_t value);
+
 private slots:
     void transmit(uint8_t data);
+    void chipPageChanged(QPoint coords, uint8_t value);
 
 private:
     uint16_t reconstructPins();
