@@ -33,7 +33,9 @@
 NT7108::NT7108()
 {    
     on = false;
-    ram.fill(0, NT7108_HEIGHT * NT7108_WIDTH);
+    buffer = 0x00;
+    output = 0x00;
+    ram.fill(0, NT7108_HEIGHT * NT7108_WIDTH / NT7108_PX_PER_PAGE);
     yaddr = 0;
     xaddr = 0;
     zaddr = 0;
