@@ -31,7 +31,7 @@ PluginManager::PluginManager()
 {
 }
 
-void PluginManager::load()
+void PluginManager::load(QThread *t)
 {
     /* Load all plugins in the startup folder for now.
      * For the general concept idea, see
@@ -41,11 +41,11 @@ void PluginManager::load()
     QLOG_TRACE() << "Searching for available plugins";
     QDir dir(PLUGINDIR);
     foreach (const QString &filename, dir.entryList(QDir::Files)) {
-        load(dir.absoluteFilePath(filename));
+        load(t, dir.absoluteFilePath(filename));
     }
 }
 
-void PluginManager::load(const QString &filename)
+void PluginManager::load(QThread *t, const QString &filename)
 {
     QLibrary lib(filename);
 
@@ -60,6 +60,7 @@ void PluginManager::load(const QString &filename)
     QSharedPointer<ComponentFactory> factory(registerPlugin());
     ComponentListEntry entry = { lib.fileName(), factory->create(), true, false };
     plugins.append(entry);
+    entry.component.logic->moveToThread(t);
 
     QLOG_TRACE() << "Loaded plugin from" << lib.fileName();
 }

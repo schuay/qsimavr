@@ -57,9 +57,9 @@ GlcdLogic::GlcdLogic()
     QObject::connect(&chip2, SIGNAL(transmit(uint8_t)),
                      this, SLOT(transmit(uint8_t)), Qt::DirectConnection);
     QObject::connect(&chip1, SIGNAL(pageChanged(QPoint,uint8_t)),
-                     this, SLOT(chipPageChanged(QPoint,uint8_t)));
+                     this, SLOT(chipPageChanged(QPoint,uint8_t)), Qt::DirectConnection);
     QObject::connect(&chip2, SIGNAL(pageChanged(QPoint,uint8_t)),
-                     this, SLOT(chipPageChanged(QPoint,uint8_t)));
+                     this, SLOT(chipPageChanged(QPoint,uint8_t)), Qt::DirectConnection);
 }
 
 void GlcdLogic::connect(avr_t *avr)

@@ -36,7 +36,7 @@ public:
     /**
      * Loads all plugins from PLUGINDIR.
      */
-    void load();
+    void load(QThread *t);
 
     void connectGui(QMdiArea *mdiArea);
 
@@ -57,7 +57,7 @@ private:
     /**
      * Attempts to load a plugin from filename.
      */
-    void load(const QString &filename);
+    void load(QThread *t, const QString &filename);
 
 private:
 
