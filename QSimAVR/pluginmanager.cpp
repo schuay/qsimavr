@@ -28,7 +28,7 @@
 
 #define PLUGINDIR ("plugins")
 
-PluginManager::PluginManager()
+PluginManager::PluginManager() : avr(NULL)
 {
 }
 
@@ -129,7 +129,9 @@ void PluginManager::setEnabled(int index, bool enabled)
 {
     plugins[index].enabled = enabled;
     if (enabled) {
-        plugins[index].component.logic->wire(avr);
+        if (avr != NULL) {
+            plugins[index].component.logic->wire(avr);
+        }
         if (plugins[index].component.gui) {
             plugins[index].component.gui->widget()->show();
         }
