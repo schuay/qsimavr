@@ -206,11 +206,19 @@ void RtcLogic::connect(avr_t *avr)
     avr_register_io(avr, &io.io);
 
     twi.connect(avr);
+
+    connected = true;
 }
 
 void RtcLogic::disconnect()
 {
+    if (!connected) {
+        return;
+    }
+
     twi.disconnect();
+
+    connected = false;
 }
 
 uint8_t RtcLogic::incrementAddress()

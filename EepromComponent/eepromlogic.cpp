@@ -35,11 +35,19 @@ EepromLogic::EepromLogic() : twi(this), addressPointer(0)
 void EepromLogic::connect(avr_t *avr)
 {
     twi.connect(avr);
+
+    connected = true;
 }
 
 void EepromLogic::disconnect()
 {
+    if (!connected) {
+        return;
+    }
+
     twi.disconnect();
+
+    connected = false;
 }
 
 uint8_t EepromLogic::incrementAddress()

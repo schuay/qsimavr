@@ -42,12 +42,15 @@ public:
 class ComponentLogic : public QObject
 {
 public:
-    ComponentLogic() { }
-    ComponentLogic(QObject *parent) : QObject(parent) { }
+    ComponentLogic() : connected(false) { }
+    ComponentLogic(QObject *parent) : QObject(parent), connected(false) { }
 
     virtual void connect(avr_t *avr) = 0;
     virtual void disconnect() = 0;
     virtual ~ComponentLogic() { }
+
+protected:
+    bool connected;
 };
 
 struct Component

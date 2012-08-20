@@ -77,10 +77,16 @@ void LedButtonsLogic::connect(avr_t *avr)
         avr_irq_register_notify(avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ(ports[port]), pin),
                                 LedButtonsLogic::pinChanged, d);
     }
+
+    connected = true;
 }
 
 void LedButtonsLogic::disconnect()
 {
+    if (!connected) {
+        return;
+    }
+
     const int count = strlen(ports) * 8;
 
     for (int i = 0; i < count; i++) {
@@ -95,6 +101,8 @@ void LedButtonsLogic::disconnect()
     avr_free_irq(irq, count);
 
     irq = NULL;
+
+    connected = false;
 }
 
 void LedButtonsLogic::buttonPressed(QChar port, uint8_t pin)

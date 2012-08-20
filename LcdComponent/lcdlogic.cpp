@@ -50,10 +50,16 @@ void LcdLogic::connect(avr_t *avr)
     avr_connect_irq(avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('C'), 3),
                     hd44780.irq + IRQ_HD44780_E);
     /* RW is set to GND. */
+
+    connected = true;
 }
 
 void LcdLogic::disconnect()
 {
+    if (!connected) {
+        return;
+    }
+
     for (int i = 0; i < 4; i++) {
         avr_irq_t * iavr = avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('C'), 4 + i);
         avr_irq_t * ilcd = hd44780.irq + IRQ_HD44780_D4 + i;
@@ -68,6 +74,8 @@ void LcdLogic::disconnect()
                     hd44780.irq + IRQ_HD44780_E);
 
     avr_free_irq(hd44780.irq, IRQ_HD44780_COUNT);
+
+    connected = false;
 }
 
 void LcdLogic::displayChanged(void *instance, const hd44780_t *hd44780)

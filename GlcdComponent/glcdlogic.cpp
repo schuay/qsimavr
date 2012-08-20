@@ -93,16 +93,24 @@ void GlcdLogic::connect(avr_t *avr)
     /* And all others. */
     avr_connect_irq(avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('E'), 6), irq + IRQ_GLCD_E);
     avr_connect_irq(avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('E'), 7), irq + IRQ_GLCD_RST);
+
+    connected = true;
 }
 
 void GlcdLogic::disconnect()
 {
+    if (!connected) {
+        return;
+    }
+
     avr_free_irq(irq, IRQ_GLCD_COUNT);
     irq = NULL;
     avr = NULL;
 
     chip1.disconnect();
     chip2.disconnect();
+
+    connected = false;
 }
 
 void GlcdLogic::pinChangedHook(struct avr_irq_t *irq, uint32_t value, void *param)
