@@ -1,0 +1,8 @@
+* 8-bit MPU
+* 1-line mode
+* Character ROM pattern selection
+* Custom character ROM
+* Cursor display
+* Display on/off
+* Reset handling
+* Display font types (5x8/5x11)
