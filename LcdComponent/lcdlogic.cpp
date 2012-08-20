@@ -78,9 +78,19 @@ void LcdLogic::unwire()
     connected = false;
 }
 
+static inline QString constructLine(const char *begin, uint8_t shift)
+{
+    const uint8_t alen = qMin(WIDTH, HD44780_ROW_LENGTH - shift);
+    QByteArray a(begin + shift, alen);
+    QByteArray b(begin, WIDTH - alen);
+
+    return a.replace('\0', ' ') + b.replace('\0', ' ');
+}
+
 void LcdLogic::displayChanged(void *instance, const hd44780_t *hd44780)
 {
     LcdLogic *p = (LcdLogic *)instance;
     const char *c = (const char *)hd44780->vram;
-    emit p->textChanged(QString(c), QString(c + HD44780_ROW2_START));
+    emit p->textChanged(constructLine(c, hd44780->shift),
+                        constructLine(c + HD44780_ROW2_START, hd44780->shift));
 }
