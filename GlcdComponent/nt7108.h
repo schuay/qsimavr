@@ -85,7 +85,7 @@ private:
     void displayOnOff(uint8_t on);
 
     /** Returns an index into ram, and increments xaddr and yaddr appropriately. */
-    uint8_t incrementAddress();
+    int incrementAddress();
 
     /** Called by the simavr cycle timer system once the 320 ns data delay have expired. */
     static avr_cycle_count_t transmitHook(struct avr_t *, avr_cycle_count_t, void *param);
