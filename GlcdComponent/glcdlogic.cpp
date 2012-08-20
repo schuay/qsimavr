@@ -56,10 +56,10 @@ GlcdLogic::GlcdLogic()
                      this, SLOT(transmit(uint8_t)), Qt::DirectConnection);
     QObject::connect(&chip2, SIGNAL(transmit(uint8_t)),
                      this, SLOT(transmit(uint8_t)), Qt::DirectConnection);
-    QObject::connect(&chip1, SIGNAL(chipPageChanged(QPoint,uint8_t)),
-                     this, SLOT(chipPageChanged(QPoint,uint8_t)), Qt::DirectConnection);
-    QObject::connect(&chip2, SIGNAL(chipPageChanged(QPoint,uint8_t)),
-                     this, SLOT(chipPageChanged(QPoint,uint8_t)), Qt::DirectConnection);
+    QObject::connect(&chip1, SIGNAL(pageChanged(QPoint,uint8_t)),
+                     this, SLOT(chipPageChanged(QPoint,uint8_t)));
+    QObject::connect(&chip2, SIGNAL(pageChanged(QPoint,uint8_t)),
+                     this, SLOT(chipPageChanged(QPoint,uint8_t)));
 }
 
 void GlcdLogic::connect(avr_t *avr)
@@ -189,7 +189,7 @@ void GlcdLogic::transmit(uint8_t data)
 void GlcdLogic::chipPageChanged(QPoint coords, uint8_t value)
 {
     QPoint offset;
-    if (sender() == &chip2) {
+    if (qobject_cast<NT7108 *>(sender()) == &chip2) {
         offset.setX(NT7108_WIDTH);
     }
 

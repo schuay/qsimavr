@@ -39,6 +39,9 @@ public:
 
     void show();
     QWidget *widget();
+
+public slots:
+    void pageChanged(QPoint coord, uint8_t value);
     
 private:
     GlcdGraphicsScene scene;

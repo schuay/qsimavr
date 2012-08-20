@@ -19,6 +19,8 @@
 
 #include "glcdfactory.h"
 
+#include <QMetaType>
+
 #include "glcdlogic.h"
 #include "glcdgui.h"
 
@@ -31,6 +33,11 @@ Component GlcdFactory::create()
     QSharedPointer<GlcdGui> gui = QSharedPointer<GlcdGui>(new GlcdGui());
     QSharedPointer<GlcdLogic> logic = QSharedPointer<GlcdLogic>(new GlcdLogic());
     Component component = { gui, logic };
+
+    qRegisterMetaType<uint8_t>("uint8_t");
+
+    QObject::connect(logic.data(), SIGNAL(pageChanged(QPoint, uint8_t)),
+                     gui.data(), SLOT(pageChanged(QPoint, uint8_t)), Qt::QueuedConnection);
 
     return component;
 }

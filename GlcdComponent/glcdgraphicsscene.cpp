@@ -19,12 +19,20 @@
 
 #include "glcdgraphicsscene.h"
 
+#include <QGraphicsRectItem>
+
+#include "nt7108.h"
+
 #define WIDTH (128)
 #define HEIGHT (64)
 #define SCALE (2)
 
-#define X(index) (index % WIDTH)
-#define Y(index) (index / WIDTH)
+#define X(index) ((index) % WIDTH)
+#define Y(index) ((index) / WIDTH)
+#define INDEX(x, y) ((y) * WIDTH + (x))
+
+#define BRUSH_OFF (QBrush(Qt::green))
+#define BRUSH_ON  (QBrush(Qt::black))
 
 GlcdGraphicsScene::GlcdGraphicsScene(QObject *parent) : QGraphicsScene(parent)
 {
@@ -37,5 +45,13 @@ GlcdGraphicsScene::GlcdGraphicsScene(QObject *parent) : QGraphicsScene(parent)
                               SCALE,
                               QPen(Qt::NoPen),
                               QBrush(Qt::green)));
+    }
+}
+
+void GlcdGraphicsScene::setPage(const QPoint &coord, uint8_t value)
+{
+    for (int i = 0; i < NT7108_PX_PER_PAGE; i++) {
+        bool on = ((value & (1 << i)) != 0);
+        pixels[INDEX(coord.x(), coord.y() * NT7108_PX_PER_PAGE + i)]->setBrush(on ? BRUSH_ON : BRUSH_OFF);
     }
 }

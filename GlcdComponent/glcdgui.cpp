@@ -48,3 +48,8 @@ QWidget *GlcdGui::widget()
 {
     return this;
 }
+
+void GlcdGui::pageChanged(QPoint coord, uint8_t value)
+{
+    scene.setPage(coord, value);
+}

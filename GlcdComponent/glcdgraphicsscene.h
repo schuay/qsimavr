@@ -22,11 +22,14 @@
 
 #include <QGraphicsScene>
 #include <QVector>
+#include <stdint.h>
 
 class GlcdGraphicsScene : public QGraphicsScene
 {
 public:
     explicit GlcdGraphicsScene(QObject *parent);
+
+    void setPage(const QPoint &coord, uint8_t value);
 
 private:
     QVector<QGraphicsRectItem *> pixels;
