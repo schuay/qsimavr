@@ -28,7 +28,7 @@
 
 class CallbackData;
 
-class LedButtonsLogic : public QObject, public ComponentLogic
+class LedButtonsLogic : public ComponentLogic
 {
     Q_OBJECT
 

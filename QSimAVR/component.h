@@ -39,9 +39,12 @@ public:
     virtual ~ComponentGui() { }
 };
 
-class ComponentLogic
+class ComponentLogic : public QObject
 {
 public:
+    ComponentLogic() { }
+    ComponentLogic(QObject *parent) : QObject(parent) { }
+
     virtual void connect(avr_t *avr) = 0;
     virtual void disconnect() = 0;
     virtual ~ComponentLogic() { }

@@ -25,7 +25,7 @@
 
 #include "hd44780.h"
 
-class LcdLogic : public QObject, public ComponentLogic
+class LcdLogic : public ComponentLogic
 {
     Q_OBJECT
 

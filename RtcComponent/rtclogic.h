@@ -23,7 +23,7 @@
 #include <component.h>
 #include <twicomponent.h>
 
-class RtcLogic : public QObject, public ComponentLogic, public TwiSlave
+class RtcLogic : public ComponentLogic, public TwiSlave
 {
 public:
     RtcLogic();

@@ -25,7 +25,7 @@
 #define HEIGHT (2)
 
 LcdLogic::LcdLogic(QObject *parent) :
-    QObject(parent)
+    ComponentLogic(parent)
 {
 }
 

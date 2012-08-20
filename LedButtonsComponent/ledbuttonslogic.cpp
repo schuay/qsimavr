@@ -34,7 +34,7 @@ struct CallbackData {
 const char ports[] = "ABCDEFGHJKL";
 
 LedButtonsLogic::LedButtonsLogic(QObject *parent) :
-    QObject(parent)
+    ComponentLogic(parent)
 {
 }
 

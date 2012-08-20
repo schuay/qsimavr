@@ -25,7 +25,7 @@
 
 #include "nt7108.h"
 
-class GlcdLogic : public QObject, public ComponentLogic
+class GlcdLogic : public ComponentLogic
 {
     Q_OBJECT
 
