@@ -24,6 +24,10 @@
 #include <QPoint>
 #include <sim_avr.h>
 
+#define NT7108_HEIGHT (64)
+#define NT7108_WIDTH (64)
+#define NT7108_PX_PER_PAGE (8)
+
 enum {
     IRQ_GLCD_D0 = 0,
     IRQ_GLCD_D1,
