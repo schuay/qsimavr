@@ -37,7 +37,6 @@ public:
     explicit GlcdGui(QWidget *parent = 0);
     ~GlcdGui();
 
-    void show();
     QWidget *widget();
 
 public slots:

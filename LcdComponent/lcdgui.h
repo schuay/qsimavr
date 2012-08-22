@@ -35,7 +35,6 @@ public:
     explicit LcdGui(QWidget *parent = 0);
     ~LcdGui();
 
-    void show();
     QWidget *widget() { return this; }
 
 

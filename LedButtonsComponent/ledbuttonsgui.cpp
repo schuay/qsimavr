@@ -84,11 +84,6 @@ LedButtonsGui::~LedButtonsGui()
     delete ui;
 }
 
-void LedButtonsGui::show()
-{
-    QWidget::show();
-}
-
 void LedButtonsGui::buttonPressed()
 {
     QPushButton *b = qobject_cast<QPushButton *>(sender());

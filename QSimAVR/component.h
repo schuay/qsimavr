@@ -34,7 +34,6 @@ public:
 class ComponentGui
 {
 public:
-    virtual void show() = 0;
     virtual QWidget *widget() = 0;
     virtual ~ComponentGui() { }
 };

@@ -40,7 +40,6 @@ public:
     explicit LedButtonsGui(QWidget *parent = 0);
     ~LedButtonsGui();
 
-    void show();
     QWidget *widget() { return this; }
 
 signals:

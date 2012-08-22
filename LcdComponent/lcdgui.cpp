@@ -39,11 +39,6 @@ LcdGui::~LcdGui()
     delete ui;
 }
 
-void LcdGui::show()
-{
-    QWidget::show();
-}
-
 void LcdGui::textChanged(QString line1, QString line2)
 {
     ui->textBrowser->setText(QString("%1\n%2").arg(line1, line2));

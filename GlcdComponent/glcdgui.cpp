@@ -38,12 +38,6 @@ GlcdGui::~GlcdGui()
     delete ui;
 }
 
-void GlcdGui::show()
-{
-    QWidget::show();
-    ui->graphicsView->fitInView(scene.sceneRect());
-}
-
 QWidget *GlcdGui::widget()
 {
     return this;
