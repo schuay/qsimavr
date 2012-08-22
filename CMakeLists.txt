@@ -37,6 +37,7 @@ add_subdirectory(LcdComponent)
 add_subdirectory(LedButtonsComponent)
 add_subdirectory(QSimAVR)
 add_subdirectory(RtcComponent)
+add_subdirectory(TemperatureComponent)
 add_subdirectory(TwiComponent)
 
 # vim:set ts=4 sw=4 et:
