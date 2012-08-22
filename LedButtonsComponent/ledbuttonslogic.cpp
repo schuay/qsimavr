@@ -78,6 +78,19 @@ void LedButtonsLogic::wire(avr_t *avr)
                                 LedButtonsLogic::pinChanged, d);
     }
 
+    avr_vcd_init(avr, "ledbuttons.vcd", &vcdFile, 100000);
+    for (int i = 0; i < 8; i++) {
+        char name[6];
+        snprintf(name, 6, "PORT%c", ports[i]);
+        avr_vcd_add_signal(&vcdFile,
+                avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ(ports[i]), IOPORT_IRQ_PIN_ALL),
+                           8 /* bits */, name);
+    }
+
+    if (vcdEnabled) {
+        avr_vcd_start(&vcdFile);
+    }
+
     connected = true;
 }
 
@@ -99,6 +112,8 @@ void LedButtonsLogic::unwire()
     }
     callbackData.clear();
     avr_free_irq(irq, count);
+
+    avr_vcd_close(&vcdFile);
 
     irq = NULL;
 

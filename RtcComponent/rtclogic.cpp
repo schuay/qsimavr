@@ -22,6 +22,7 @@
 #include <QDateTime>
 #include <sim_cycle_timers.h>
 #include <sim_time.h>
+#include <avr_twi.h>
 
 #define RTC_ADDR (0xd0)     /**< 1101 000x. */
 #define RTC_MASK (0xfe)     /**< 1111 1110. */
@@ -207,6 +208,15 @@ void RtcLogic::wire(avr_t *avr)
 
     twi.wire(avr);
 
+    avr_vcd_init(avr, "eeprom.vcd", &vcdFile, 10000);
+    avr_vcd_add_signal(&vcdFile,
+        avr_io_getirq(avr, AVR_IOCTL_TWI_GETIRQ(0), TWI_IRQ_STATUS), 8 /* bits */ ,
+        "TWSR" );
+
+    if (vcdEnabled) {
+        avr_vcd_start(&vcdFile);
+    }
+
     connected = true;
 }
 
@@ -217,6 +227,8 @@ void RtcLogic::unwire()
     }
 
     twi.unwire();
+
+    avr_vcd_close(&vcdFile);
 
     connected = false;
 }

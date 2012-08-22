@@ -94,6 +94,29 @@ void GlcdLogic::wire(avr_t *avr)
     avr_connect_irq(avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('E'), 6), irq + IRQ_GLCD_E);
     avr_connect_irq(avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('E'), 7), irq + IRQ_GLCD_RST);
 
+    /* Initialize the VCD file. */
+    avr_vcd_init(avr, "glcd.vcd", &vcdFile, 5);
+    for (int i = 0; i < IRQ_GLCD_RW; i++) {
+        avr_vcd_add_signal(&vcdFile,avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ(DATA_PORT), i),
+                           1, irq_names[i]);
+    }
+    avr_vcd_add_signal(&vcdFile,avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('E'), 2),
+                       1, irq_names[IRQ_GLCD_CS1]);
+    avr_vcd_add_signal(&vcdFile,avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('E'), 3),
+                       1, irq_names[IRQ_GLCD_CS2]);
+    avr_vcd_add_signal(&vcdFile,avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('E'), 4),
+                       1, irq_names[IRQ_GLCD_RS]);
+    avr_vcd_add_signal(&vcdFile,avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('E'), 5),
+                       1, irq_names[IRQ_GLCD_RW]);
+    avr_vcd_add_signal(&vcdFile,avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('E'), 6),
+                       1, irq_names[IRQ_GLCD_E]);
+    avr_vcd_add_signal(&vcdFile,avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('E'), 7),
+                       1, irq_names[IRQ_GLCD_RST]);
+
+    if (vcdEnabled) {
+        avr_vcd_start(&vcdFile);
+    }
+
     connected = true;
 }
 
@@ -104,6 +127,8 @@ void GlcdLogic::unwire()
     }
 
     avr_free_irq(irq, IRQ_GLCD_COUNT);
+    avr_vcd_close(&vcdFile);
+
     irq = NULL;
     avr = NULL;
 
