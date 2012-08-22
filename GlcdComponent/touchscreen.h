@@ -17,31 +17,18 @@
 
 
 
-#include "glcdfactory.h"
+#ifndef TOUCHSCREEN_H
+#define TOUCHSCREEN_H
 
-#include <QMetaType>
+#include <QPoint>
 
-#include "glcdlogic.h"
-#include "glcdgui.h"
-
-GlcdFactory::GlcdFactory()
+class Touchscreen
 {
-}
+public:
+    Touchscreen();
 
-Component GlcdFactory::create()
-{
-    QSharedPointer<GlcdGui> gui = QSharedPointer<GlcdGui>(new GlcdGui());
-    QSharedPointer<GlcdLogic> logic = QSharedPointer<GlcdLogic>(new GlcdLogic());
-    Component component = { gui, logic };
+    void pressed(const QPoint &coord) { }
+    void released() { }
+};
 
-    qRegisterMetaType<uint8_t>("uint8_t");
-
-    QObject::connect(logic.data(), SIGNAL(pageChanged(QPoint, uint8_t)),
-                     gui.data(), SLOT(pageChanged(QPoint, uint8_t)), Qt::QueuedConnection);
-    QObject::connect(gui.data(), SIGNAL(pressed(QPoint)),
-                     logic.data(), SLOT(pressed(QPoint)), Qt::QueuedConnection);
-    QObject::connect(gui.data(), SIGNAL(released()),
-                     logic.data(), SLOT(released()), Qt::QueuedConnection);
-
-    return component;
-}
+#endif // TOUCHSCREEN_H

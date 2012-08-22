@@ -228,3 +228,13 @@ void GlcdLogic::chipPageChanged(QPoint coords, uint8_t value)
 
     emit pageChanged(coords + offset, value);
 }
+
+void GlcdLogic::pressed(QPoint coord)
+{
+    touchscreen.pressed(coord);
+}
+
+void GlcdLogic::released()
+{
+    touchscreen.released();
+}

@@ -4,6 +4,7 @@ set(glcd_SRCS
     glcdgui.cpp
     glcdlogic.cpp
     nt7108.cpp
+    touchscreen.cpp
 )
 
 qt4_wrap_cpp(glcd_MOC

@@ -24,6 +24,7 @@
 #include <QObject>
 
 #include "nt7108.h"
+#include "touchscreen.h"
 
 class GlcdLogic : public ComponentLogic
 {
@@ -34,6 +35,10 @@ public:
 
     void wire(avr_t *avr);
     void unwire();
+
+public slots:
+    void pressed(QPoint coord);
+    void released();
 
 signals:
     void pageChanged(QPoint coords, uint8_t value);
@@ -60,6 +65,8 @@ private:
      */
     NT7108 chip1;
     NT7108 chip2;
+
+    Touchscreen touchscreen;
 
     /**
      * Timings.
