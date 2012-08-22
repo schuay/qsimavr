@@ -46,7 +46,7 @@ PluginManager::~PluginManager()
     settings.sync();
 }
 
-void PluginManager::load(QThread *t)
+void PluginManager::load(QThread *t, QMdiArea *mdiArea)
 {
     /* Load all plugins in the startup folder for now.
      * For the general concept idea, see
@@ -56,11 +56,11 @@ void PluginManager::load(QThread *t)
     QLOG_TRACE() << "Searching for available plugins";
     QDir dir(PLUGINDIR);
     foreach (const QString &filename, dir.entryList(QDir::Files)) {
-        load(t, dir.absoluteFilePath(filename));
+        load(t, mdiArea, dir.absoluteFilePath(filename));
     }
 }
 
-void PluginManager::load(QThread *t, const QString &filename)
+void PluginManager::load(QThread *t, QMdiArea *mdiArea, const QString &filename)
 {
     QLibrary lib(filename);
 
@@ -74,27 +74,21 @@ void PluginManager::load(QThread *t, const QString &filename)
 
     QSettings settings;
 
-    const QString name = QFileInfo(lib.fileName()).baseName();
     QSharedPointer<ComponentFactory> factory(registerPlugin());
-    ComponentListEntry entry = { name,
-                                 factory->create(),
-                                 settings.value(KEY_ENABLED(name), true).toBool(),
-                                 settings.value(KEY_VCD(name), false).toBool() };
-    plugins.append(entry);
-    entry.component.logic->moveToThread(t);
 
-    QLOG_TRACE() << "Loaded plugin from" << lib.fileName();
-}
+    const QString name = QFileInfo(lib.fileName()).baseName();
+    Component component = factory->create();
+    const bool enabled = settings.value(KEY_ENABLED(name), true).toBool();
+    const bool vcd = settings.value(KEY_VCD(name), false).toBool();
 
-void PluginManager::connectGui(QMdiArea *mdiArea)
-{
-    foreach(const ComponentListEntry &plugin, plugins) {
-        if (plugin.component.gui.isNull()) {
-            continue;
-        }
+    /* The logic part of a component lives in the SimAVR thread. */
+    component.logic->moveToThread(t);
 
-        QWidget *widget = plugin.component.gui->widget();
-        QMdiSubWindow *w = mdiArea->addSubWindow(
+    /* Create the GUI window. */
+    QMdiSubWindow *w = NULL;
+    if (!component.gui.isNull()) {
+        QWidget *widget = component.gui->widget();
+        w = mdiArea->addSubWindow(
                     widget, Qt::CustomizeWindowHint | Qt::WindowTitleHint);
 
         /* Disable both the sizable window borders and the default system menu
@@ -102,10 +96,15 @@ void PluginManager::connectGui(QMdiArea *mdiArea)
         w->setFixedSize(w->sizeHint());
         w->setSystemMenu(NULL);;
 
-        if (!plugin.enabled) {
-            widget->hide();
+        if (!enabled) {
+            w->hide();
         }
     }
+
+    ComponentListEntry entry = { name, component, w, enabled, vcd };
+    plugins.append(entry);
+
+    QLOG_TRACE() << "Loaded plugin from" << lib.fileName();
 }
 
 void PluginManager::connectSim(avr_t *avr)
@@ -154,13 +153,13 @@ void PluginManager::setEnabled(int index, bool enabled)
         if (avr != NULL) {
             plugins[index].component.logic->wire(avr);
         }
-        if (plugins[index].component.gui) {
-            plugins[index].component.gui->widget()->show();
+        if (plugins[index].window) {
+            plugins[index].window->show();
         }
     } else {
         plugins[index].component.logic->unwire();
-        if (plugins[index].component.gui) {
-            plugins[index].component.gui->widget()->hide();
+        if (plugins[index].window) {
+            plugins[index].window->hide();
         }
     }
 }

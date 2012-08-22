@@ -37,9 +37,7 @@ public:
     /**
      * Loads all plugins from PLUGINDIR.
      */
-    void load(QThread *t);
-
-    void connectGui(QMdiArea *mdiArea);
+    void load(QThread *t, QMdiArea *mdiArea);
 
     int count() const;
     QString name(int index) const;
@@ -58,7 +56,7 @@ private:
     /**
      * Attempts to load a plugin from filename.
      */
-    void load(QThread *t, const QString &filename);
+    void load(QThread *t, QMdiArea *mdiArea, const QString &filename);
 
 private:
 
@@ -66,6 +64,7 @@ private:
     {
         QString name;
         Component component;
+        QMdiSubWindow *window;
         bool enabled;
         bool vcd;
     };

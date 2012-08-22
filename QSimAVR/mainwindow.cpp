@@ -55,8 +55,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     createSim();
 
-    pluginManager.load(sim.data());
-    pluginManager.connectGui(ui->mdiArea);
+    pluginManager.load(sim.data(), ui->mdiArea);
 
     QSettings settings;
     restoreGeometry(settings.value(KEY_GEOMETRY).toByteArray());
