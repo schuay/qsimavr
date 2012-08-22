@@ -2,6 +2,7 @@ set(qsimavr_SRCS
     QsDebugOutput.cpp
     QsLog.cpp
     QsLogDest.cpp
+    aboutdialog.cpp
     main.cpp
     mainwindow.cpp
     pluginmanager.cpp
@@ -12,6 +13,7 @@ set(qsimavr_SRCS
 )
 
 qt4_wrap_cpp(qsimavr_MOC
+    aboutdialog.h
     mainwindow.h
     pluginmanager.h
     pluginswindow.h
@@ -19,6 +21,7 @@ qt4_wrap_cpp(qsimavr_MOC
 )
 
 qt4_wrap_ui(qsimavr_UI
+    aboutdialog.ui
     mainwindow.ui
     pluginswindow.ui
 )

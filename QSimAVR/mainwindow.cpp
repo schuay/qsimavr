@@ -27,6 +27,7 @@
 #include <QMdiSubWindow>
 #include <QSettings>
 
+#include "aboutdialog.h"
 #include "pluginswindow.h"
 #include "QsLog.h"
 
@@ -88,6 +89,7 @@ void MainWindow::setupMenu()
     connect(ui->actionLoad_Firmware, SIGNAL(triggered()), this, SLOT(loadFirmware()));
     connect(ui->actionQuit, SIGNAL(triggered()), this, SLOT(close()));
     connect(ui->actionConfigure_Plugins, SIGNAL(triggered()), this, SLOT(configurePlugins()));
+    connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(showAbout()));
 
     /* Setup recent file actions. */
     QList<QAction *> actions;
@@ -203,6 +205,12 @@ void MainWindow::restartSimulation()
 {
     terminateSim();
     sim->start();
+}
+
+void MainWindow::showAbout()
+{
+    AboutDialog d;
+    d.exec();
 }
 
 MainWindow::~MainWindow()

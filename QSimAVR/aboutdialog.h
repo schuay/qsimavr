@@ -17,70 +17,25 @@
 
 
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef ABOUTDIALOG_H
+#define ABOUTDIALOG_H
 
-#include <QLabel>
-#include <QMainWindow>
-#include <QSharedPointer>
-
-#include "pluginmanager.h"
-#include "recentfiles.h"
-#include "simavr.h"
+#include <QDialog>
 
 namespace Ui {
-class MainWindow;
+class AboutDialog;
 }
 
-class MainWindow : public QMainWindow
+class AboutDialog : public QDialog
 {
     Q_OBJECT
     
 public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    explicit AboutDialog(QWidget *parent = 0);
+    ~AboutDialog();
     
-signals:
-    void stopSimulation();
-
-private slots:
-    /**
-     * Attempts to load a firmware file chosen by the user into the SimAVR instance.
-     */
-    void loadFirmware();
-
-    void openRecentFile();
-    void configurePlugins();
-
-    void simulationStateChanged(SimulationState state);
-    void restartSimulation();
-
-    void showAbout();
-
-protected:
-    void closeEvent(QCloseEvent *event);
-
-private: /* Methods. */
-    void setupToolbar();
-    void setupMenu();
-    void setupStatusbar();
-    void createSim();
-    void terminateSim();
-    void loadFirmware(const QString &filename);
-
-private: /* Variables. */
-    Ui::MainWindow *ui;
-
-    PluginManager pluginManager;
-    QSharedPointer<SimAVR> sim;
-    QSharedPointer<RecentFiles> recent;
-
-    QAction *pauseAction;
-    QAction *restartAction;
-    QAction *attachAction;
-
-    QLabel *cycleLabel;
-    QLabel *stateLabel;
+private:
+    Ui::AboutDialog *ui;
 };
 
-#endif // MAINWINDOW_H
+#endif // ABOUTDIALOG_H
