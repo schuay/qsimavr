@@ -23,6 +23,7 @@
 #include <QWidget>
 #include <QSharedPointer>
 #include <sim_avr.h>
+#include <sim_vcd_file.h>
 
 /**
  * The factory is responsible for constructing all component parts
@@ -63,15 +64,33 @@ private:
 class ComponentLogic : public QObject
 {
 public:
-    ComponentLogic() : connected(false) { }
-    ComponentLogic(QObject *parent) : QObject(parent), connected(false) { }
+    ComponentLogic() : connected(false), vcdEnabled(false) { }
+    ComponentLogic(QObject *parent) : QObject(parent), connected(false), vcdEnabled(false) { }
+    virtual ~ComponentLogic() { }
 
     virtual void wire(avr_t *avr) = 0;
     virtual void unwire() = 0;
-    virtual ~ComponentLogic() { }
+    virtual void enableVcd(bool vcdEnabled)
+    {
+        if (this->vcdEnabled == vcdEnabled) {
+            return;
+        }
+
+        this->vcdEnabled = vcdEnabled;
+        if (connected) {
+            if (vcdEnabled) {
+                avr_vcd_start(&vcdFile);
+            } else {
+                avr_vcd_stop(&vcdFile);
+            }
+        }
+    }
 
 protected:
     bool connected;
+    bool vcdEnabled;
+
+    avr_vcd_t vcdFile;
 
 private:
     Q_DISABLE_COPY(ComponentLogic)

@@ -81,6 +81,9 @@ void PluginManager::load(QThread *t, QMdiArea *mdiArea, const QString &filename)
     const bool enabled = settings.value(KEY_ENABLED(name), true).toBool();
     const bool vcd = settings.value(KEY_VCD(name), false).toBool();
 
+    /* Pass on VCD enabled/disabled. */
+    component.logic->enableVcd(vcd);
+
     /* The logic part of a component lives in the SimAVR thread. */
     component.logic->moveToThread(t);
 
@@ -166,6 +169,6 @@ void PluginManager::setEnabled(int index, bool enabled)
 
 void PluginManager::setVcd(int index, bool vcd)
 {
-    QLOG_WARN() << "Not implemented yet.";
     plugins[index].vcd = vcd;
+    plugins[index].component.logic->enableVcd(vcd);
 }

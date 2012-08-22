@@ -51,6 +51,21 @@ void LcdLogic::wire(avr_t *avr)
                     hd44780.irq + IRQ_HD44780_E);
     /* RW is set to GND. */
 
+    avr_vcd_init(avr, "lcd.vcd", &vcdFile, 100000);
+    avr_vcd_add_signal(&vcdFile,
+            avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('C'), IOPORT_IRQ_PIN_ALL),
+            4 /* bits */, "D4-D7");
+    avr_vcd_add_signal(&vcdFile,
+            avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('C'), 2),
+            1 /* bits */, "RS");
+    avr_vcd_add_signal(&vcdFile,
+            avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('C'), 3),
+            1 /* bits */, "E");
+
+    if (vcdEnabled) {
+        avr_vcd_start(&vcdFile);
+    }
+
     connected = true;
 }
 
@@ -74,6 +89,8 @@ void LcdLogic::unwire()
                     hd44780.irq + IRQ_HD44780_E);
 
     avr_free_irq(hd44780.irq, IRQ_HD44780_COUNT);
+
+    avr_vcd_close(&vcdFile);
 
     connected = false;
 }
