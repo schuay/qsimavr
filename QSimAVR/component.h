@@ -31,8 +31,12 @@
 template<typename Interface>
 class Factory {
 public:
+    Factory() { }
     virtual Interface create() = 0;
     virtual ~Factory() { }
+
+private:
+    Q_DISABLE_COPY(Factory)
 };
 
 /**
@@ -44,8 +48,13 @@ public:
 class ComponentGui
 {
 public:
+    ComponentGui() { }
+
     virtual QWidget *widget() = 0;
     virtual ~ComponentGui() { }
+
+private:
+    Q_DISABLE_COPY(ComponentGui)
 };
 
 /**
@@ -63,6 +72,9 @@ public:
 
 protected:
     bool connected;
+
+private:
+    Q_DISABLE_COPY(ComponentLogic)
 };
 
 struct Component
