@@ -51,12 +51,27 @@ void NT7108::disconnect()
 {
 }
 
+#define DATA_MASK (_BV(IRQ_GLCD_D0) | _BV(IRQ_GLCD_D1) | _BV(IRQ_GLCD_D2) | _BV(IRQ_GLCD_D3) | \
+                   _BV(IRQ_GLCD_D4) | _BV(IRQ_GLCD_D5) | _BV(IRQ_GLCD_D6) | _BV(IRQ_GLCD_D7))
+
 void NT7108::processCommand(uint16_t pins)
 {
+    const bool pinESet = ((pins & _BV(IRQ_GLCD_E)) != 0);
+
+    /* Buffer the command pins at the rising E edge. Even though writes
+     * are triggered at the falling edge, they act according to the pin state
+     * at the previous rising edge. Data pins are read at the falling edge. */
+
+    if (pinESet) {
+        pinstate = pins;
+    } else {
+        pinstate = (pinstate & ~DATA_MASK) | (pins & DATA_MASK);
+    }
+
+    const bool pinRWSet = ((pinstate & _BV(IRQ_GLCD_RW)) != 0);
+
     /* Reads are handled by us on rising E edges,
      * writes on falling edges. */
-    const bool pinESet = ((pins & _BV(IRQ_GLCD_E)) != 0);
-    const bool pinRWSet = ((pins & _BV(IRQ_GLCD_RW)) != 0);
     if (pinESet != pinRWSet) {
         return;
     }
@@ -72,10 +87,10 @@ void NT7108::processCommand(uint16_t pins)
 
     /* Read/write display data. Read if RW is set. */
     case IRQ_GLCD_RS:
-        if (pins & _BV(IRQ_GLCD_RW)) {
+        if (pinRWSet) {
             readDisplayData();
         } else {
-            writeDisplayData((uint8_t)pins);
+            writeDisplayData((uint8_t)pinstate);
         }
         break;
 
@@ -89,29 +104,29 @@ void NT7108::processCommand(uint16_t pins)
      * or
      * Display start line: 1 1 A A A A A */
     case IRQ_GLCD_D7:
-        if (pins & _BV(IRQ_GLCD_D6)) {
-            setStartLine(pins & __extension__ 0b00111111);
+        if (pinstate & _BV(IRQ_GLCD_D6)) {
+            setStartLine(pinstate & __extension__ 0b00111111);
         } else {
-            setPage(pins & __extension__ 0b00000111);
+            setPage(pinstate & __extension__ 0b00000111);
         }
         break;
 
     /* Set address: 0 1 A A A A A A */
     case IRQ_GLCD_D6:
-        setAddress(pins & __extension__ 0b00111111);
+        setAddress(pinstate & __extension__ 0b00111111);
         break;
 
     /* Display on/off: 0 0 1 1 1 1 1 On/Off */
     case IRQ_GLCD_D5:
-        if ((pins & __extension__ 0b00111110) != __extension__ 0b00111110) {
+        if ((pinstate & __extension__ 0b00111110) != __extension__ 0b00111110) {
             qDebug("GLCD: Invalid pin state 0x%04x, ignoring.", pins);
         } else {
-            displayOnOff(pins & __extension__ 0b00000001);
+            displayOnOff(pinstate & __extension__ 0b00000001);
         }
         break;
 
     default:
-        qDebug("GLCD: Invalid pin state 0x%04x, ignoring.", pins);
+        qDebug("GLCD: Invalid pin state 0x%04x, ignoring.", pinstate);
         return;
     }
 }

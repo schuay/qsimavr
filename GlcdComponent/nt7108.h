@@ -97,6 +97,8 @@ private:
     bool on;
     QByteArray ram;
 
+    uint16_t pinstate;   /**< Buffers the command pins at the rising edge and data pins at falling edge. */
+
     uint8_t output; /**< Output register, see display read. */
     uint8_t buffer; /**< Transmit buffer. Used to buffer output for transmitHook. */
 
