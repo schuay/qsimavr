@@ -69,6 +69,8 @@ void GlcdLogic::wire(avr_t *avr)
     chip1.connect(avr);
     chip2.connect(avr);
 
+    touchscreen.wire(avr);
+
     /* Calculate timing cycles. */
     cyclesELowHigh = (avr->frequency * NS_E_HIGH_LOW) / NS_PER_SEC;
 
@@ -134,6 +136,8 @@ void GlcdLogic::unwire()
 
     chip1.disconnect();
     chip2.disconnect();
+
+    touchscreen.unwire();
 
     connected = false;
 }

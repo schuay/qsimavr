@@ -21,14 +21,26 @@
 #define TOUCHSCREEN_H
 
 #include <QPoint>
+#include <avr_adc.h>
+#include <sim_avr.h>
 
 class Touchscreen
 {
 public:
     Touchscreen();
 
-    void pressed(const QPoint &coord) { }
-    void released() { }
+    void wire(avr_t *avr);
+    void unwire();
+
+    void pressed(const QPoint &coord);
+    void released();
+
+private:
+    void outTrigger(avr_adc_mux_t mux);
+    static void outTriggerHook(struct avr_irq_t *irq, uint32_t value, void *param);
+
+private:
+    avr_t *avr;
 };
 
 #endif // TOUCHSCREEN_H
