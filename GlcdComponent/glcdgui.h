@@ -41,6 +41,10 @@ public:
 
 public slots:
     void pageChanged(QPoint coord, uint8_t value);
+
+signals:
+    void pressed(QPoint coord);
+    void released();
     
 private:
     GlcdGraphicsScene scene;

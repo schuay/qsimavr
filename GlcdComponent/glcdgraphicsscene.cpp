@@ -20,6 +20,7 @@
 #include "glcdgraphicsscene.h"
 
 #include <QGraphicsRectItem>
+#include <QGraphicsSceneMouseEvent>
 
 #include "nt7108.h"
 
@@ -54,4 +55,24 @@ void GlcdGraphicsScene::setPage(const QPoint &coord, uint8_t value)
         bool on = ((value & (1 << i)) != 0);
         pixels[INDEX(coord.x(), coord.y() * NT7108_PX_PER_PAGE + i)]->setBrush(on ? BRUSH_ON : BRUSH_OFF);
     }
+}
+
+void GlcdGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    QPoint coord(event->scenePos().toPoint() / SCALE);
+    emit pressed(coord);
+    event->accept();
+}
+
+void GlcdGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    QPoint coord(event->scenePos().toPoint() / SCALE);
+    emit pressed(coord);
+    event->accept();
+}
+
+void GlcdGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    emit released();
+    event->accept();
 }

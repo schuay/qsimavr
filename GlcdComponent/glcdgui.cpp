@@ -31,6 +31,9 @@ GlcdGui::GlcdGui(QWidget *parent) :
     ui->graphicsView->setScene(&scene);
     ui->graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+    connect(&scene, SIGNAL(pressed(QPoint)), this, SIGNAL(pressed(QPoint)));
+    connect(&scene, SIGNAL(released()), this, SIGNAL(released()));
 }
 
 GlcdGui::~GlcdGui()

@@ -8,6 +8,7 @@ set(glcd_SRCS
 
 qt4_wrap_cpp(glcd_MOC
     glcdgui.h
+    glcdgraphicsscene.h
     glcdlogic.h
     nt7108.h
 )

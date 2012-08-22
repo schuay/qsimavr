@@ -26,10 +26,21 @@
 
 class GlcdGraphicsScene : public QGraphicsScene
 {
+    Q_OBJECT
+
 public:
     explicit GlcdGraphicsScene(QObject *parent);
 
     void setPage(const QPoint &coord, uint8_t value);
+
+signals:
+    void pressed(QPoint coord);
+    void released();
+
+protected:
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 private:
     QVector<QGraphicsRectItem *> pixels;
