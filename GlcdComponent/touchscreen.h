@@ -41,6 +41,8 @@ private:
 
 private:
     avr_t *avr;
+
+    QPoint coord;
 };
 
 #endif // TOUCHSCREEN_H
