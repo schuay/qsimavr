@@ -36,7 +36,7 @@ static const char *irq_names[] = {
     "=glcd.D7",
     "<glcd.RW",
     "<glcd.RS",
-    "<glcd.RST"
+    "<glcd.RST",
     "<glcd.E",
     "<glcd.CS1",
     "<glcd.CS2",
