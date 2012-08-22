@@ -63,7 +63,7 @@ void NT7108::processCommand(uint16_t pins)
 
     /* Detect the highest set bit. */
     uint8_t highestSetBit = IRQ_GLCD_RS;
-    while (!(pins & _BV(highestSetBit))) {
+    while (!(pinstate & _BV(highestSetBit)) && highestSetBit > 0) {
         highestSetBit--;
     }
 
