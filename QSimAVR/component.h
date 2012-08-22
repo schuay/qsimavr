@@ -24,6 +24,10 @@
 #include <QSharedPointer>
 #include <sim_avr.h>
 
+/**
+ * The factory is responsible for constructing all component parts
+ * and connecting them.
+ */
 template<typename Interface>
 class Factory {
 public:
@@ -31,6 +35,12 @@ public:
     virtual ~Factory() { }
 };
 
+/**
+ * The GUI part of components. It handles both display of the component
+ * state and a way of configuring the component. It usually communicates
+ * with the logic part using queued signals (since they live in different
+ * threads).
+ */
 class ComponentGui
 {
 public:
@@ -38,6 +48,9 @@ public:
     virtual ~ComponentGui() { }
 };
 
+/**
+ * The logic part of components. It lives in the SimAVR thread.
+ */
 class ComponentLogic : public QObject
 {
 public:
