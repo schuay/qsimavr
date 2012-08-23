@@ -19,10 +19,10 @@ typedef enum {
 } return_state_t;
 
 #define OW_CALLBACK	void owCallback(return_state_t owState)
-#define BUS_PORT	PORTD
-#define BUS_PIN		PIND
-#define BUS_DDR		DDRD
-#define BUS_BIT		PD6
+#define BUS_PORT	PORTG
+#define BUS_PIN		PING
+#define BUS_DDR		DDRG
+#define BUS_BIT		PG0
 
 // time values are given in 500ns steps
 #define RESET_PULSE_DURATION	(480 * 2)

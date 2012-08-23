@@ -36,7 +36,7 @@ void owInit() {
 	TCCR1B = (1<<WGM12) | (1<<ICES1);
 
 	// enable interrupt on compareA (TOP) and on compareB
-	TIMSK |= (1<<OCIE1A) | (1<<OCIE1B);
+	TIMSK1 = (1<<OCIE1A) | (1<<OCIE1B);
 	state = IDLE;
 }
 
@@ -89,7 +89,7 @@ void stopTimer() {
 	// disable prescaler 8
 	TCCR1B &= ~(1<<CS11);
 	state = IDLE;
-	TIFR |= (1<<OCF1A) | (1<<OCF1B);
+	TIFR1 |= (1<<OCF1A) | (1<<OCF1B);
 }
 
 void busLow() {

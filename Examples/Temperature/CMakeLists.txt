@@ -1,5 +1,3 @@
-set(CMAKE_C_FLAGS "-mmcu=atmega16 -Os -std=gnu99")
-
 add_executable(temperature
     char_display.c
     one_wire.c
@@ -7,4 +5,8 @@ add_executable(temperature
     temperature_control.c
     uart.c
     util.c
+)
+
+include_directories(
+    ${SIMAVR_INCLUDES}
 )

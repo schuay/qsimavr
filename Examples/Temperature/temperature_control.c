@@ -16,6 +16,7 @@
  */
 
 #include <avr/io.h>
+#include <stdio.h>
 #include <avr/interrupt.h>
 #include "temperature_control.h"
 #include "char_display.h"
@@ -48,6 +49,8 @@ int main() {
 	uartInit();
 	uartSendChar(10);
 
+	printf("Hello\n");
+
 #ifndef NO_LCD
 	lcdInit(&PORTB);
 #endif
@@ -77,6 +80,7 @@ int main() {
 			if (temp != TEMP_ERROR) {
 				frac = (temperature&0xf)*10000/16;
 #ifdef NO_LCD
+				printf("Temp: %d.%s%d C\n", temperature >> 4, frac < 1000 ? "0" : "", frac);
 #else
 				lcdWrite(int2string(temperature>>4));
 				lcdWrite(".");
@@ -89,12 +93,14 @@ int main() {
 			}
 			else {
 #ifdef NO_LCD
+				printf("no sensor\n");
 #else
 				lcdWrite("no sensor");
 #endif
 			}
 
 #ifdef NO_LCD
+			printf("%d data: 0x%x\n", count, data);
 #else
 			lcdGoto(1, 0);
 			lcdWrite(int2string(count));

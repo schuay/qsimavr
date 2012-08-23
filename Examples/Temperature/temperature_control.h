@@ -3,4 +3,6 @@
 
 #define F_CPU	16000000UL
 
+#define NO_LCD
+
 #endif /* TEMPERATURE_CONTROL_H_ */
