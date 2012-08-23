@@ -17,35 +17,23 @@
 
 
 
-#ifndef TEMPERATURELOGIC_H
-#define TEMPERATURELOGIC_H
+#ifndef DS1820_H
+#define DS1820_H
 
-#include <component.h>
+#include <QObject>
 
-#include "ds1820.h"
-
-class TemperatureLogic : public ComponentLogic
+class DS1820 : public QObject
 {
     Q_OBJECT
-
 public:
-    TemperatureLogic();
-
-    void wire(avr_t *avr);
-    void unwire();
-
+    explicit DS1820(QObject *parent = 0);
+    
+signals:
+    
+public slots:
+    
 private:
-    static void ddrChangedHook(struct avr_irq_t *irq, uint32_t value, void *param);
-    void ddrChanged(uint32_t value);
 
-    static void pinChangedHook(struct avr_irq_t *irq, uint32_t value, void *param);
-    void pinChanged(uint32_t value);
-
-private:
-    avr_t *avr;
-    avr_irq_t *irq;
-
-    DS1820 ds1820;
 };
 
-#endif // TEMPERATURELOGIC_H
+#endif // DS1820_H

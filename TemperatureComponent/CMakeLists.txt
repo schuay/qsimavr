@@ -1,10 +1,12 @@
 set(temperature_SRCS
+    ds1820.cpp
     temperaturefactory.cpp
     temperaturegui.cpp
     temperaturelogic.cpp
 )
 
 qt4_wrap_cpp(temperature_MOC
+    ds1820.h
     temperaturegui.h
     temperaturelogic.h
 )
