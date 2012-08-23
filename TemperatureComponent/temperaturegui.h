@@ -20,19 +20,22 @@
 #ifndef TEMPERATUREGUI_H
 #define TEMPERATUREGUI_H
 
+#include <component.h>
 #include <QWidget>
 
 namespace Ui {
 class TemperatureGui;
 }
 
-class TemperatureGui : public QWidget
+class TemperatureGui : public QWidget, public ComponentGui
 {
     Q_OBJECT
     
 public:
     explicit TemperatureGui(QWidget *parent = 0);
     ~TemperatureGui();
+
+    QWidget *widget() { return this; }
     
 private:
     Ui::TemperatureGui *ui;

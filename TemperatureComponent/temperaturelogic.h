@@ -20,10 +20,28 @@
 #ifndef TEMPERATURELOGIC_H
 #define TEMPERATURELOGIC_H
 
-class TemperatureLogic
+#include <component.h>
+
+class TemperatureLogic : public ComponentLogic
 {
+    Q_OBJECT
+
 public:
     TemperatureLogic();
+
+    void wire(avr_t *avr);
+    void unwire();
+
+private:
+    static void ddrChangedHook(struct avr_irq_t *irq, uint32_t value, void *param);
+    void ddrChanged(uint32_t value);
+
+    static void pinChangedHook(struct avr_irq_t *irq, uint32_t value, void *param);
+    void pinChanged(uint32_t value);
+
+private:
+    avr_t *avr;
+    avr_irq_t *irq;
 };
 
 #endif // TEMPERATURELOGIC_H

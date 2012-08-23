@@ -20,10 +20,14 @@
 #ifndef TEMPERATUREFACTORY_H
 #define TEMPERATUREFACTORY_H
 
-class TemperatureFactory
+#include <component.h>
+
+class TemperatureFactory : public ComponentFactory
 {
 public:
-    TemperatureFactory();
+    Component create();
 };
+
+PUBLISH_PLUGIN(TemperatureFactory)
 
 #endif // TEMPERATUREFACTORY_H

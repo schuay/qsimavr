@@ -19,6 +19,14 @@
 
 #include "temperaturefactory.h"
 
-TemperatureFactory::TemperatureFactory()
+#include "temperaturegui.h"
+#include "temperaturelogic.h"
+
+Component TemperatureFactory::create()
 {
+    QSharedPointer<TemperatureGui> gui = QSharedPointer<TemperatureGui>(new TemperatureGui());
+    QSharedPointer<TemperatureLogic> logic = QSharedPointer<TemperatureLogic>(new TemperatureLogic());
+    Component component = { gui, logic };
+
+    return component;
 }
