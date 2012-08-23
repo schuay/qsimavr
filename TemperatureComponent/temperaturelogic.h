@@ -41,11 +41,17 @@ private:
     static void pinChangedHook(struct avr_irq_t *irq, uint32_t value, void *param);
     void pinChanged(uint32_t value);
 
+    static avr_cycle_count_t setPinHook(struct avr_t *, avr_cycle_count_t, void *param);
+    void setPin();
+
 private:
     avr_t *avr;
     avr_irq_t *irq;
 
     DS1820 ds1820;
+
+    bool output;
+    bool reentrant;
 };
 
 #endif // TEMPERATURELOGIC_H

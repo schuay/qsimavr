@@ -21,12 +21,15 @@
 #define DS1820_H
 
 #include <QObject>
+#include <sim_cycle_timers.h>
 
 class DS1820 : public QObject
 {
     Q_OBJECT
 public:
     explicit DS1820(QObject *parent = 0);
+
+    uint8_t pinLevel() const { return 1; }
     
 signals:
     

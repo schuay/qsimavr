@@ -44,6 +44,8 @@ TemperatureLogic::TemperatureLogic()
 void TemperatureLogic::wire(avr_t *avr)
 {
     this->avr = avr;
+    output = false;
+    reentrant = false;
 
     /* Note that different IRQs are connected to in- and output directions.
      * IRQ_TEMP_DQ receives signals from simavr (including our own output).
@@ -94,7 +96,13 @@ void TemperatureLogic::ddrChangedHook(avr_irq_t *, uint32_t value, void *param)
 
 void TemperatureLogic::ddrChanged(uint32_t value)
 {
+    output = (value == 1);
+    if (output) {
+        return;
+    }
 
+    /* The pin has just been switched to input and the ds1820 takes control. */
+    avr_raise_irq(irq + IRQ_TEMP_OUT, ds1820.pinLevel());
 }
 
 void TemperatureLogic::pinChangedHook(avr_irq_t *, uint32_t value, void *param)
@@ -105,5 +113,29 @@ void TemperatureLogic::pinChangedHook(avr_irq_t *, uint32_t value, void *param)
 
 void TemperatureLogic::pinChanged(uint32_t value)
 {
+    if (reentrant) {
+        return;
+    }
 
+    if (!output) {
+        /* Schedule immediate setting of pin. We can't do this by IRQ because
+         * the nested IRQ change would be immediately overwritten.
+         * This assumes that there is no internal pull-up set.
+         */
+        avr_cycle_timer_register(avr, 0, setPinHook, this);
+    }
+}
+
+avr_cycle_count_t TemperatureLogic::setPinHook(avr_t *, avr_cycle_count_t, void *param)
+{
+    TemperatureLogic *p = (TemperatureLogic *)param;
+    p->setPin();
+    return 0;
+}
+
+void TemperatureLogic::setPin()
+{
+    reentrant = true;
+    avr_raise_irq(irq + IRQ_TEMP_OUT, ds1820.pinLevel());
+    reentrant = false;
 }
