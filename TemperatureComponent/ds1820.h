@@ -29,14 +29,23 @@ class DS1820 : public QObject
 public:
     explicit DS1820(QObject *parent = 0);
 
-    uint8_t pinLevel() const { return 1; }
+    void wire(avr_t *avr);
+
+    uint8_t pinLevel() const { return level; }
+    void pinChanged(uint8_t level);
     
 signals:
-    
-public slots:
+    void setPin();
+
+private:
+    static avr_cycle_count_t timerHook(avr_t *avr, avr_cycle_count_t cycles, void *param);
+    void timer();
     
 private:
+    avr_t *avr;
+    avr_cycle_count_t lastChange;
 
+    uint8_t level;
 };
 
 #endif // DS1820_H

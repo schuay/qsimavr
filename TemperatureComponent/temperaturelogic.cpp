@@ -39,6 +39,7 @@ static const char *irq_names[] = {
 
 TemperatureLogic::TemperatureLogic()
 {
+    connect(&ds1820, SIGNAL(setPin()), this, SLOT(setPin()));
 }
 
 void TemperatureLogic::wire(avr_t *avr)
@@ -46,6 +47,8 @@ void TemperatureLogic::wire(avr_t *avr)
     this->avr = avr;
     output = false;
     reentrant = false;
+
+    ds1820.wire(avr);
 
     /* Note that different IRQs are connected to in- and output directions.
      * IRQ_TEMP_DQ receives signals from simavr (including our own output).
@@ -102,7 +105,8 @@ void TemperatureLogic::ddrChanged(uint32_t value)
     }
 
     /* The pin has just been switched to input and the ds1820 takes control. */
-    avr_raise_irq(irq + IRQ_TEMP_OUT, ds1820.pinLevel());
+    ds1820.pinChanged(1);
+    setPin();
 }
 
 void TemperatureLogic::pinChangedHook(avr_irq_t *, uint32_t value, void *param)
@@ -123,7 +127,10 @@ void TemperatureLogic::pinChanged(uint32_t value)
          * This assumes that there is no internal pull-up set.
          */
         avr_cycle_timer_register(avr, 0, setPinHook, this);
+        return;
     }
+
+    ds1820.pinChanged(value);
 }
 
 avr_cycle_count_t TemperatureLogic::setPinHook(avr_t *, avr_cycle_count_t, void *param)

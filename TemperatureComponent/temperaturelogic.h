@@ -42,6 +42,8 @@ private:
     void pinChanged(uint32_t value);
 
     static avr_cycle_count_t setPinHook(struct avr_t *, avr_cycle_count_t, void *param);
+
+private slots:
     void setPin();
 
 private:

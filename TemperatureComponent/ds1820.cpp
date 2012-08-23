@@ -19,7 +19,41 @@
 
 #include "ds1820.h"
 
+#include <sim_time.h>
+
 DS1820::DS1820(QObject *parent) :
     QObject(parent)
 {
+}
+
+void DS1820::wire(avr_t *avr)
+{
+    this->avr = avr;
+    lastChange = 0;
+    level = 1;
+}
+
+void DS1820::pinChanged(uint8_t level)
+{
+    uint32_t duration = avr_cycles_to_usec(avr, avr->cycle - lastChange);
+    lastChange = avr->cycle;
+
+    if (level == 1 && duration > 480) {
+        this->level = 0;
+        avr_cycle_timer_register_usec(avr, 15 + 60 + 10, DS1820::timerHook, this);
+        emit setPin();
+    }
+}
+
+avr_cycle_count_t DS1820::timerHook(avr_t *, avr_cycle_count_t, void *param)
+{
+    DS1820 *p = (DS1820 *)param;
+    p->timer();
+    return 0;
+}
+
+void DS1820::timer()
+{
+    level = 1;
+    emit setPin();
 }
