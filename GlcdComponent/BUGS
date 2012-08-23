@@ -1,1 +1,2 @@
 * The VCD trace stops after ~1 ms
+* Segfault when disabling Glcd during led_rain demo
