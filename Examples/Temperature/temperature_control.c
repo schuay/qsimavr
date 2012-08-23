@@ -48,7 +48,9 @@ int main() {
 	uartInit();
 	uartSendChar(10);
 
+#ifndef NO_LCD
 	lcdInit(&PORTB);
+#endif
 	tempInit();
 
 	sei();
@@ -66,30 +68,44 @@ int main() {
 			sei();
 
 			// refresh display
+#ifdef NO_LCD
+#else
 			lcdClear();
 			lcdGoto(0, 0);
 			lcdWrite("Temp: ");
+#endif
 			if (temp != TEMP_ERROR) {
+				frac = (temperature&0xf)*10000/16;
+#ifdef NO_LCD
+#else
 				lcdWrite(int2string(temperature>>4));
 				lcdWrite(".");
-				frac = (temperature&0xf)*10000/16;
 				if (frac < 1000) {
 					lcdWrite("0");
 				}
 				lcdWrite(int2string(frac));
 				lcdWrite(degStr);
+#endif
 			}
 			else {
+#ifdef NO_LCD
+#else
 				lcdWrite("no sensor");
+#endif
 			}
+
+#ifdef NO_LCD
+#else
 			lcdGoto(1, 0);
 			lcdWrite(int2string(count));
-			count++;
 
 			lcdGoto(1, 6);
 			lcdWrite("data: 0x");
 			lcdWrite(hex2string(data));
 			lcdRefresh();
+#endif
+
+			count++;
 		}
 		sleep_mode();
 	}
