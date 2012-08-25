@@ -21,6 +21,12 @@
 
 #include <sim_time.h>
 
+#define MASTER_RESET_MIN (480)
+#define DS1820_RESET_WAIT_MIN (15)
+#define DS1820_RESET_WAIT_MAX (60)
+#define DS1820_PRESENCE_MIN (60)
+#define DS1820_PRESENCE_MAX (240)
+
 DS1820::DS1820(QObject *parent) :
     QObject(parent)
 {
@@ -31,17 +37,29 @@ void DS1820::wire(avr_t *avr)
     this->avr = avr;
     lastChange = 0;
     level = 1;
+    state = IDLE;
 }
 
 void DS1820::pinChanged(uint8_t level)
 {
-    uint32_t duration = avr_cycles_to_usec(avr, avr->cycle - lastChange);
+    const uint32_t duration = avr_cycles_to_usec(avr, avr->cycle - lastChange);
     lastChange = avr->cycle;
+    this->level = level;
 
-    if (level == 1 && duration > 480) {
-        this->level = 0;
-        avr_cycle_timer_register_usec(avr, 15 + 60 + 10, DS1820::timerHook, this);
-        emit setPin();
+    const bool low = (level == 0);
+    const bool high = !low;
+
+    switch (state) {
+
+    case IDLE:
+        if (high && duration > MASTER_RESET_MIN) {
+            state = RESET_WAIT;
+            wait(DS1820_RESET_WAIT_MIN);
+        }
+        break;
+
+    default:
+        qDebug("%s: state not handled", __PRETTY_FUNCTION__);
     }
 }
 
@@ -54,6 +72,28 @@ avr_cycle_count_t DS1820::timerHook(avr_t *, avr_cycle_count_t, void *param)
 
 void DS1820::timer()
 {
-    level = 1;
-    emit setPin();
+    switch (state) {
+
+    case RESET_WAIT:
+        wait(DS1820_PRESENCE_MAX);
+        state = PRESENCE_PULSE;
+        level = 0;
+        emit setPin();
+        break;
+
+    case PRESENCE_PULSE:
+        state = IDLE;
+        level = 1;
+        emit setPin();
+        break;
+
+    default:
+        qDebug("%s: state not handled", __PRETTY_FUNCTION__);
+    }
+}
+
+void DS1820::wait(uint32_t usec)
+{
+    avr_cycle_timer_cancel(avr, DS1820::timerHook, this);
+    avr_cycle_timer_register_usec(avr, usec, DS1820::timerHook, this);
 }

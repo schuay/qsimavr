@@ -40,12 +40,20 @@ signals:
 private:
     static avr_cycle_count_t timerHook(avr_t *avr, avr_cycle_count_t cycles, void *param);
     void timer();
+    void wait(uint32_t usec);
     
 private:
+    typedef enum {
+        IDLE,
+        RESET_WAIT,
+        PRESENCE_PULSE,
+    } state_t;
+
     avr_t *avr;
     avr_cycle_count_t lastChange;
 
     uint8_t level;
+    state_t state;
 };
 
 #endif // DS1820_H
