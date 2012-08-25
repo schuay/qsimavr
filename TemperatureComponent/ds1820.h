@@ -60,6 +60,7 @@ private:
         READ_SCRATCHPAD,
         WRITE_SCRATCHPAD,
         RECALL_E,
+        CONVERT,
     } state_t;
 
     avr_t *avr;

@@ -219,6 +219,7 @@ void DS1820::pinChanged(uint8_t level)
         break;
 
     case RECALL_E:
+    case CONVERT:
 
         /* Assume instantaneous transfer, signal success immediately. */
         write(1);
@@ -257,6 +258,7 @@ void DS1820::timer()
 
     case SEARCH_ROM:
     case RECALL_E:
+    case CONVERT:
         level = 1;
         emit setPin();
         break;
@@ -326,6 +328,10 @@ void DS1820::functionCommand()
     switch (in) {
     case FUN_CONVERT_T:
         qDebug("%s: CONVERT T", __PRETTY_FUNCTION__);
+        state = CONVERT;
+        scratchpad[SCRATCHPAD_TEMP_LSB] = 0xff; /* == 0.5. */
+        scratchpad[SCRATCHPAD_TEMP_MSB] = 0xff; /* Sign == Negative. */
+        updateCRC();
         break;
 
     case FUN_WRITE_SCRATCHPAD:
@@ -349,6 +355,7 @@ void DS1820::functionCommand()
         qDebug("%s: RECALL E", __PRETTY_FUNCTION__);
         scratchpad[SCRATCHPAD_TH_REG] = eeprom[0];
         scratchpad[SCRATCHPAD_TL_REG] = eeprom[1];
+        updateCRC();
         state = RECALL_E;
         break;
 
