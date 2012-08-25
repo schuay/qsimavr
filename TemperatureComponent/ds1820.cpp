@@ -123,6 +123,24 @@ void DS1820::pinChanged(uint8_t level)
 
         break;
 
+    case MATCH_ROM:
+
+        if ((read(duration) ^ (ROM_ID >> incount)) & 1) {
+            state = IDLE;
+            incount = 0;
+            in = 0;
+        }
+
+        incount++;
+
+        if (incount == ROM_ID_BITS) {
+            state = FUNCTION_COMMAND;
+            incount = 0;
+            in = 0;
+        }
+
+        break;
+
     default:
         qDebug("%s: state not handled", __PRETTY_FUNCTION__);
     }
@@ -179,6 +197,7 @@ void DS1820::romCommand()
 
     case ROM_MATCH_ROM:
         qDebug("%s: MATCH ROM", __PRETTY_FUNCTION__);
+        state = MATCH_ROM;
         break;
 
     case ROM_SEARCH_ROM:
