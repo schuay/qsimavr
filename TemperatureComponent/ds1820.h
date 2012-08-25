@@ -47,6 +47,7 @@ private:
         IDLE,
         RESET_WAIT,
         PRESENCE_PULSE,
+        ROM_COMMAND,
     } state_t;
 
     avr_t *avr;
@@ -54,6 +55,9 @@ private:
 
     uint8_t level;
     state_t state;
+
+    uint8_t in;
+    uint8_t incount;
 };
 
 #endif // DS1820_H

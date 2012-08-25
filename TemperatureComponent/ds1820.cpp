@@ -21,11 +21,15 @@
 
 #include <sim_time.h>
 
-#define MASTER_RESET_MIN (480)
-#define DS1820_RESET_WAIT_MIN (15)
-#define DS1820_RESET_WAIT_MAX (60)
-#define DS1820_PRESENCE_MIN (60)
-#define DS1820_PRESENCE_MAX (240)
+#define FUDGE (10)
+#define MASTER_RESET_MIN (480 - FUDGE)
+#define MASTER_WRITE0_MIN (60 - FUDGE)
+#define MASTER_WRITE0_MAX (120 + FUDGE)
+#define MASTER_WRITE1_MAX (15 + FUDGE)
+#define DS1820_RESET_WAIT_MIN (15 - FUDGE)
+#define DS1820_RESET_WAIT_MAX (60 + FUDGE)
+#define DS1820_PRESENCE_MIN (60 - FUDGE)
+#define DS1820_PRESENCE_MAX (240 + FUDGE)
 
 DS1820::DS1820(QObject *parent) :
     QObject(parent)
@@ -47,14 +51,39 @@ void DS1820::pinChanged(uint8_t level)
     this->level = level;
 
     const bool low = (level == 0);
-    const bool high = !low;
+    if (low) {
+        return;
+    }
+
+    /* RESET works during all states. */
+    if (duration > MASTER_RESET_MIN) {
+        in = 0;
+        incount = 0;
+        state = RESET_WAIT;
+        wait(DS1820_RESET_WAIT_MIN);
+        return;
+    }
 
     switch (state) {
 
-    case IDLE:
-        if (high && duration > MASTER_RESET_MIN) {
-            state = RESET_WAIT;
-            wait(DS1820_RESET_WAIT_MIN);
+    case ROM_COMMAND:
+
+        if (MASTER_WRITE0_MIN < duration && duration < MASTER_WRITE0_MAX) {
+            /* WRITE 0. */
+            in = (in << 1) | 0;
+            incount++;
+            if (incount == 8) {
+                qDebug("%s received ROM command 0x%02x", __PRETTY_FUNCTION__, in);
+            }
+        } else if (duration < MASTER_WRITE1_MAX) {
+            /* WRITE 0. */
+            in = (in << 1) | 1;
+            incount++;
+            if (incount == 8) {
+                qDebug("%s received ROM command 0x%02x", __PRETTY_FUNCTION__, in);
+            }
+        } else {
+            qDebug("%s: unrecognized low interval %d us", __PRETTY_FUNCTION__, duration);
         }
         break;
 
@@ -82,7 +111,7 @@ void DS1820::timer()
         break;
 
     case PRESENCE_PULSE:
-        state = IDLE;
+        state = ROM_COMMAND;
         level = 1;
         emit setPin();
         break;
