@@ -1,8 +1,0 @@
-#ifndef TEMPERATURE_CONTROL_H_
-#define TEMPERATURE_CONTROL_H_
-
-#define F_CPU	16000000UL
-
-#define NO_LCD
-
-#endif /* TEMPERATURE_CONTROL_H_ */
