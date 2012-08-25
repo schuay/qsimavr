@@ -33,6 +33,8 @@
 #define DS1820_PRESENCE_MIN (60 - FUDGE)
 #define DS1820_PRESENCE_MAX (240 + FUDGE)
 #define DS1820_READ1_MIN (15 + FUDGE)
+#define DS1820_RECALL_MIN (5)
+#define DS1820_CONVERT_MIN (5)
 
 #define ROM_READ_ROM (0x33)
 #define ROM_MATCH_ROM (0x55)
@@ -62,6 +64,8 @@
 #define SCRATCHPAD_COUNT_PER_C (7)
 #define SCRATCHPAD_CRC (8)
 
+#define EEPROM_BYTES (2)
+
 #define BITS_PER_BYTE (8)
 
 DS1820::DS1820(QObject *parent) :
@@ -76,6 +80,8 @@ DS1820::DS1820(QObject *parent) :
     scratchpad[SCRATCHPAD_COUNT_REMAIN] = 0x0c;
     scratchpad[SCRATCHPAD_COUNT_PER_C] = 0x10;
     updateCRC();
+
+    eeprom.fill(0x00, EEPROM_BYTES);
 }
 
 void DS1820::updateCRC()
@@ -212,6 +218,13 @@ void DS1820::pinChanged(uint8_t level)
         }
         break;
 
+    case RECALL_E:
+
+        /* Assume instantaneous transfer, signal success immediately. */
+        write(1);
+
+        break;
+
     default:
         qDebug("%s: state not handled", __PRETTY_FUNCTION__);
     }
@@ -243,6 +256,7 @@ void DS1820::timer()
         break;
 
     case SEARCH_ROM:
+    case RECALL_E:
         level = 1;
         emit setPin();
         break;
@@ -296,6 +310,7 @@ void DS1820::romCommand()
 
     case ROM_SKIP_ROM:
         qDebug("%s: SKIP ROM", __PRETTY_FUNCTION__);
+        state = FUNCTION_COMMAND;
         break;
 
     default:
@@ -326,10 +341,15 @@ void DS1820::functionCommand()
 
     case FUN_COPY_SCRATCHPAD:
         qDebug("%s: COPY SCRATCHPAD", __PRETTY_FUNCTION__);
+        eeprom[0] = scratchpad[SCRATCHPAD_TH_REG];
+        eeprom[1] = scratchpad[SCRATCHPAD_TL_REG];
         break;
 
     case FUN_RECALL_E:
         qDebug("%s: RECALL E", __PRETTY_FUNCTION__);
+        scratchpad[SCRATCHPAD_TH_REG] = eeprom[0];
+        scratchpad[SCRATCHPAD_TL_REG] = eeprom[1];
+        state = RECALL_E;
         break;
 
     case FUN_READ_POWER_SUPPLY:

@@ -59,6 +59,7 @@ private:
         FUNCTION_COMMAND,
         READ_SCRATCHPAD,
         WRITE_SCRATCHPAD,
+        RECALL_E,
     } state_t;
 
     avr_t *avr;
@@ -74,6 +75,7 @@ private:
     uint8_t outcount;
 
     QByteArray scratchpad;
+    QByteArray eeprom;
 };
 
 #endif // DS1820_H
