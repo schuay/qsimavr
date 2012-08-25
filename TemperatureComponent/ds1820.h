@@ -41,6 +41,10 @@ private:
     static avr_cycle_count_t timerHook(avr_t *avr, avr_cycle_count_t cycles, void *param);
     void timer();
     void wait(uint32_t usec);
+
+    void write(uint8_t bit);
+    uint8_t read(uint32_t duration) const;
+    void romCommand();
     
 private:
     typedef enum {
@@ -48,6 +52,9 @@ private:
         RESET_WAIT,
         PRESENCE_PULSE,
         ROM_COMMAND,
+        MATCH_ROM,
+        SEARCH_ROM,
+        FUNCTION_COMMAND,
     } state_t;
 
     avr_t *avr;
@@ -58,6 +65,9 @@ private:
 
     uint8_t in;
     uint8_t incount;
+
+    uint8_t out;
+    uint8_t outcount;
 };
 
 #endif // DS1820_H
