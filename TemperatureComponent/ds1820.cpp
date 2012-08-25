@@ -46,6 +46,10 @@ void DS1820::wire(avr_t *avr)
 
 void DS1820::pinChanged(uint8_t level)
 {
+    if (this->level == level) {
+        return;
+    }
+
     const uint32_t duration = avr_cycles_to_usec(avr, avr->cycle - lastChange);
     lastChange = avr->cycle;
     this->level = level;
@@ -68,20 +72,12 @@ void DS1820::pinChanged(uint8_t level)
 
     case ROM_COMMAND:
 
-        if (MASTER_WRITE0_MIN < duration && duration < MASTER_WRITE0_MAX) {
-            /* WRITE 0. */
-            in = (in << 1) | 0;
+        if (MASTER_WRITE0_MIN < duration && duration < MASTER_WRITE0_MAX) { /* WRITE 0. */
+            in |= 0 << incount;
             incount++;
-            if (incount == 8) {
-                qDebug("%s received ROM command 0x%02x", __PRETTY_FUNCTION__, in);
-            }
-        } else if (duration < MASTER_WRITE1_MAX) {
-            /* WRITE 0. */
-            in = (in << 1) | 1;
+        } else if (duration < MASTER_WRITE1_MAX) { /* WRITE 0. */
+            in |= 1 << incount;
             incount++;
-            if (incount == 8) {
-                qDebug("%s received ROM command 0x%02x", __PRETTY_FUNCTION__, in);
-            }
         } else {
             qDebug("%s: unrecognized low interval %d us", __PRETTY_FUNCTION__, duration);
         }
@@ -89,6 +85,11 @@ void DS1820::pinChanged(uint8_t level)
 
     default:
         qDebug("%s: state not handled", __PRETTY_FUNCTION__);
+    }
+
+    if (incount == 8) {
+        qDebug("%s received ROM command 0x%02x", __PRETTY_FUNCTION__, in);
+        incount = 0;
     }
 }
 
