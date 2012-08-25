@@ -21,6 +21,8 @@
 
 #include <sim_time.h>
 
+#include "crc8.h"
+
 #define FUDGE (10)
 #define MASTER_RESET_MIN (480 - FUDGE)
 #define MASTER_WRITE0_MIN (60 - FUDGE)
@@ -49,9 +51,36 @@
 #define ROM_ID (0x370008022e49fb10)
 #define ROM_ID_BITS (64)
 
+#define SCRATCHPAD_BYTES (9)
+#define SCRATCHPAD_TEMP_LSB (0)
+#define SCRATCHPAD_TEMP_MSB (1)
+#define SCRATCHPAD_TH_REG (2)
+#define SCRATCHPAD_TL_REG (3)
+#define SCRATCHPAD_RESERVED1 (4)
+#define SCRATCHPAD_RESERVED2 (5)
+#define SCRATCHPAD_COUNT_REMAIN (6)
+#define SCRATCHPAD_COUNT_PER_C (7)
+#define SCRATCHPAD_CRC (8)
+
+#define BITS_PER_BYTE (8)
+
 DS1820::DS1820(QObject *parent) :
     QObject(parent)
 {
+    scratchpad[SCRATCHPAD_TEMP_LSB] = 0xaa;
+    scratchpad[SCRATCHPAD_TEMP_MSB] = 0x00;
+    scratchpad[SCRATCHPAD_TH_REG] = 0x00;
+    scratchpad[SCRATCHPAD_TL_REG] = 0x00;
+    scratchpad[SCRATCHPAD_RESERVED1] = 0xff;
+    scratchpad[SCRATCHPAD_RESERVED2] = 0xff;
+    scratchpad[SCRATCHPAD_COUNT_REMAIN] = 0x0c;
+    scratchpad[SCRATCHPAD_COUNT_PER_C] = 0x10;
+    updateCRC();
+}
+
+void DS1820::updateCRC()
+{
+    scratchpad[SCRATCHPAD_CRC] = crc8((uint8_t *)scratchpad.data(), SCRATCHPAD_BYTES - 1);
 }
 
 void DS1820::wire(avr_t *avr)
@@ -159,6 +188,30 @@ void DS1820::pinChanged(uint8_t level)
 
         break;
 
+    case READ_SCRATCHPAD:
+
+        write((scratchpad[outcount / BITS_PER_BYTE] >> (outcount % BITS_PER_BYTE)) & 1);
+        outcount++;
+
+        break;
+
+    case WRITE_SCRATCHPAD: {
+
+        uint8_t index = SCRATCHPAD_TH_REG + incount / BITS_PER_BYTE;
+        uint8_t bit = incount % BITS_PER_BYTE;
+
+        if (bit == BITS_PER_BYTE - 1 && index == SCRATCHPAD_TL_REG) {
+            incount = 0;
+            state = IDLE;
+        }
+
+        scratchpad[index] = (scratchpad[index] & ~(1 << bit)) | (read(duration) << bit);
+        updateCRC();
+
+        incount++;
+        }
+        break;
+
     default:
         qDebug("%s: state not handled", __PRETTY_FUNCTION__);
     }
@@ -190,6 +243,16 @@ void DS1820::timer()
         break;
 
     case SEARCH_ROM:
+        level = 1;
+        emit setPin();
+        break;
+
+    case READ_SCRATCHPAD:
+        if (outcount == BITS_PER_BYTE * SCRATCHPAD_BYTES) {
+            outcount = 0;
+            state = IDLE;
+        }
+
         level = 1;
         emit setPin();
         break;
@@ -252,10 +315,13 @@ void DS1820::functionCommand()
 
     case FUN_WRITE_SCRATCHPAD:
         qDebug("%s: WRITE SCRATCHPAD", __PRETTY_FUNCTION__);
+        state = WRITE_SCRATCHPAD;
         break;
 
     case FUN_READ_SCRATCHPAD:
         qDebug("%s: READ SCRATCHPAD", __PRETTY_FUNCTION__);
+        state = READ_SCRATCHPAD;
+        outcount = 0;
         break;
 
     case FUN_COPY_SCRATCHPAD:
@@ -268,12 +334,16 @@ void DS1820::functionCommand()
 
     case FUN_READ_POWER_SUPPLY:
         qDebug("%s: READ POWER SUPPLY", __PRETTY_FUNCTION__);
-        break;
 
+        /* Nothing to do, high == external power. */
+        break;
 
     default:
         qDebug("%s: unrecognized function command 0x%02x", __PRETTY_FUNCTION__, in);
     }
+
+    incount = 0;
+    in = 0;
 }
 
 void DS1820::write(uint8_t bit)

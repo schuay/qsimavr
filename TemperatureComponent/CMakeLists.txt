@@ -1,4 +1,5 @@
 set(temperature_SRCS
+    crc8.c
     ds1820.cpp
     temperaturefactory.cpp
     temperaturegui.cpp

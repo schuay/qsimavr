@@ -46,6 +46,7 @@ private:
     uint8_t read(uint32_t duration) const;
     void romCommand();
     void functionCommand();
+    void updateCRC();
     
 private:
     typedef enum {
@@ -56,6 +57,8 @@ private:
         MATCH_ROM,
         SEARCH_ROM,
         FUNCTION_COMMAND,
+        READ_SCRATCHPAD,
+        WRITE_SCRATCHPAD,
     } state_t;
 
     avr_t *avr;
@@ -69,6 +72,8 @@ private:
 
     uint8_t out;
     uint8_t outcount;
+
+    QByteArray scratchpad;
 };
 
 #endif // DS1820_H
