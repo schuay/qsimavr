@@ -45,6 +45,7 @@ private:
     void write(uint8_t bit);
     uint8_t read(uint32_t duration) const;
     void romCommand();
+    void functionCommand();
     
 private:
     typedef enum {

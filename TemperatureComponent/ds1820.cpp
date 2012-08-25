@@ -38,6 +38,13 @@
 #define ROM_ALARM_SEARCH (0xec)
 #define ROM_SKIP_ROM (0xcc)
 
+#define FUN_CONVERT_T (0x44)
+#define FUN_WRITE_SCRATCHPAD (0x4e)
+#define FUN_READ_SCRATCHPAD (0xbe)
+#define FUN_COPY_SCRATCHPAD (0x48)
+#define FUN_RECALL_E (0xb8)
+#define FUN_READ_POWER_SUPPLY (0xb4)
+
 /** DS18S20 family code: 0x10; CRC: 0x37. */
 #define ROM_ID (0x370008022e49fb10)
 #define ROM_ID_BITS (64)
@@ -91,6 +98,17 @@ void DS1820::pinChanged(uint8_t level)
 
         if (incount == 8) {
             romCommand();
+        }
+
+        break;
+
+    case FUNCTION_COMMAND:
+
+        in |= read(duration) << incount;
+        incount++;
+
+        if (incount == 8) {
+            functionCommand();
         }
 
         break;
@@ -223,6 +241,39 @@ void DS1820::romCommand()
 
     incount = 0;
     in = 0;
+}
+
+void DS1820::functionCommand()
+{
+    switch (in) {
+    case FUN_CONVERT_T:
+        qDebug("%s: CONVERT T", __PRETTY_FUNCTION__);
+        break;
+
+    case FUN_WRITE_SCRATCHPAD:
+        qDebug("%s: WRITE SCRATCHPAD", __PRETTY_FUNCTION__);
+        break;
+
+    case FUN_READ_SCRATCHPAD:
+        qDebug("%s: READ SCRATCHPAD", __PRETTY_FUNCTION__);
+        break;
+
+    case FUN_COPY_SCRATCHPAD:
+        qDebug("%s: COPY SCRATCHPAD", __PRETTY_FUNCTION__);
+        break;
+
+    case FUN_RECALL_E:
+        qDebug("%s: RECALL E", __PRETTY_FUNCTION__);
+        break;
+
+    case FUN_READ_POWER_SUPPLY:
+        qDebug("%s: READ POWER SUPPLY", __PRETTY_FUNCTION__);
+        break;
+
+
+    default:
+        qDebug("%s: unrecognized function command 0x%02x", __PRETTY_FUNCTION__, in);
+    }
 }
 
 void DS1820::write(uint8_t bit)
