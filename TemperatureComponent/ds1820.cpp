@@ -23,6 +23,12 @@
 
 #include "crc8.h"
 
+#if 0
+#define DEBUG(...) do { qDebug(__VA_ARGS__); } while (0)
+#else
+#define DEBUG(...)
+#endif
+
 #define FUDGE (10)
 #define MASTER_RESET_MIN (480 - FUDGE)
 #define MASTER_WRITE0_MIN (60 - FUDGE)
@@ -114,7 +120,7 @@ void DS1820::pinChanged(uint8_t level)
 
     /* RESET works during all states. */
     if (duration > MASTER_RESET_MIN) {
-        qDebug("%s: RESET", __PRETTY_FUNCTION__);
+        DEBUG("%s: RESET", __PRETTY_FUNCTION__);
         in = 0;
         incount = 0;
         out = 0;
@@ -227,7 +233,7 @@ void DS1820::pinChanged(uint8_t level)
         break;
 
     default:
-        qDebug("%s: state not handled", __PRETTY_FUNCTION__);
+        DEBUG("%s: state not handled", __PRETTY_FUNCTION__);
     }
 
 }
@@ -274,7 +280,7 @@ void DS1820::timer()
         break;
 
     default:
-        qDebug("%s: state not handled", __PRETTY_FUNCTION__);
+        DEBUG("%s: state not handled", __PRETTY_FUNCTION__);
     }
 }
 
@@ -289,16 +295,16 @@ void DS1820::romCommand()
     switch (in) {
 
     case ROM_READ_ROM:
-        qDebug("%s: READ ROM", __PRETTY_FUNCTION__);
+        DEBUG("%s: READ ROM", __PRETTY_FUNCTION__);
         break;
 
     case ROM_MATCH_ROM:
-        qDebug("%s: MATCH ROM", __PRETTY_FUNCTION__);
+        DEBUG("%s: MATCH ROM", __PRETTY_FUNCTION__);
         state = MATCH_ROM;
         break;
 
     case ROM_SEARCH_ROM:
-        qDebug("%s: SEARCH ROM", __PRETTY_FUNCTION__);
+        DEBUG("%s: SEARCH ROM", __PRETTY_FUNCTION__);
         state = SEARCH_ROM;
         out = 0;
         out |= ROM_ID & 1;
@@ -307,16 +313,16 @@ void DS1820::romCommand()
         break;
 
     case ROM_ALARM_SEARCH:
-        qDebug("%s: ALARM SEARCH", __PRETTY_FUNCTION__);
+        DEBUG("%s: ALARM SEARCH", __PRETTY_FUNCTION__);
         break;
 
     case ROM_SKIP_ROM:
-        qDebug("%s: SKIP ROM", __PRETTY_FUNCTION__);
+        DEBUG("%s: SKIP ROM", __PRETTY_FUNCTION__);
         state = FUNCTION_COMMAND;
         break;
 
     default:
-        qDebug("%s: unrecognized ROM command 0x%02x", __PRETTY_FUNCTION__, in);
+        DEBUG("%s: unrecognized ROM command 0x%02x", __PRETTY_FUNCTION__, in);
     }
 
     incount = 0;
@@ -327,7 +333,7 @@ void DS1820::functionCommand()
 {
     switch (in) {
     case FUN_CONVERT_T:
-        qDebug("%s: CONVERT T", __PRETTY_FUNCTION__);
+        DEBUG("%s: CONVERT T", __PRETTY_FUNCTION__);
         state = CONVERT;
         scratchpad[SCRATCHPAD_TEMP_LSB] = 0xff; /* == 0.5. */
         scratchpad[SCRATCHPAD_TEMP_MSB] = 0xff; /* Sign == Negative. */
@@ -335,24 +341,24 @@ void DS1820::functionCommand()
         break;
 
     case FUN_WRITE_SCRATCHPAD:
-        qDebug("%s: WRITE SCRATCHPAD", __PRETTY_FUNCTION__);
+        DEBUG("%s: WRITE SCRATCHPAD", __PRETTY_FUNCTION__);
         state = WRITE_SCRATCHPAD;
         break;
 
     case FUN_READ_SCRATCHPAD:
-        qDebug("%s: READ SCRATCHPAD", __PRETTY_FUNCTION__);
+        DEBUG("%s: READ SCRATCHPAD", __PRETTY_FUNCTION__);
         state = READ_SCRATCHPAD;
         outcount = 0;
         break;
 
     case FUN_COPY_SCRATCHPAD:
-        qDebug("%s: COPY SCRATCHPAD", __PRETTY_FUNCTION__);
+        DEBUG("%s: COPY SCRATCHPAD", __PRETTY_FUNCTION__);
         eeprom[0] = scratchpad[SCRATCHPAD_TH_REG];
         eeprom[1] = scratchpad[SCRATCHPAD_TL_REG];
         break;
 
     case FUN_RECALL_E:
-        qDebug("%s: RECALL E", __PRETTY_FUNCTION__);
+        DEBUG("%s: RECALL E", __PRETTY_FUNCTION__);
         scratchpad[SCRATCHPAD_TH_REG] = eeprom[0];
         scratchpad[SCRATCHPAD_TL_REG] = eeprom[1];
         updateCRC();
@@ -360,13 +366,13 @@ void DS1820::functionCommand()
         break;
 
     case FUN_READ_POWER_SUPPLY:
-        qDebug("%s: READ POWER SUPPLY", __PRETTY_FUNCTION__);
+        DEBUG("%s: READ POWER SUPPLY", __PRETTY_FUNCTION__);
 
         /* Nothing to do, high == external power. */
         break;
 
     default:
-        qDebug("%s: unrecognized function command 0x%02x", __PRETTY_FUNCTION__, in);
+        DEBUG("%s: unrecognized function command 0x%02x", __PRETTY_FUNCTION__, in);
     }
 
     incount = 0;
@@ -391,7 +397,7 @@ uint8_t DS1820::read(uint32_t duration) const
     } else if (duration < MASTER_WRITE1_MAX) { /* WRITE 0. */
         return 1;
     } else {
-        qDebug("%s: unrecognized low interval %d us", __PRETTY_FUNCTION__, duration);
+        DEBUG("%s: unrecognized low interval %d us", __PRETTY_FUNCTION__, duration);
         return 0;
     }
 }
