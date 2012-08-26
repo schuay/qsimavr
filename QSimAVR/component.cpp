@@ -30,11 +30,23 @@ ComponentLogic::ComponentLogic(QObject *parent) :
 void ComponentLogic::wire(avr_t *avr)
 {
     wireHook(avr);
+
+    if (vcdEnabled) {
+        avr_vcd_start(&vcdFile);
+    }
+
+    connected = true;
 }
 
 void ComponentLogic::unwire()
 {
+    if (!connected) {
+        return;
+    }
+
     unwireHook();
+
+    connected = false;
 }
 
 void ComponentLogic::enableVcd(bool vcdEnabled)

@@ -86,20 +86,10 @@ void LedButtonsLogic::wireHook(avr_t *avr)
                 avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ(ports[i]), IOPORT_IRQ_PIN_ALL),
                            8 /* bits */, name);
     }
-
-    if (vcdEnabled) {
-        avr_vcd_start(&vcdFile);
-    }
-
-    connected = true;
 }
 
 void LedButtonsLogic::unwireHook()
 {
-    if (!connected) {
-        return;
-    }
-
     const int count = strlen(ports) * 8;
 
     for (int i = 0; i < count; i++) {
@@ -116,8 +106,6 @@ void LedButtonsLogic::unwireHook()
     avr_vcd_close(&vcdFile);
 
     irq = NULL;
-
-    connected = false;
 }
 
 void LedButtonsLogic::buttonPressed(QChar port, uint8_t pin)

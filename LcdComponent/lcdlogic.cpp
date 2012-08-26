@@ -61,20 +61,10 @@ void LcdLogic::wireHook(avr_t *avr)
     avr_vcd_add_signal(&vcdFile,
             avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('C'), 3),
             1 /* bits */, "E");
-
-    if (vcdEnabled) {
-        avr_vcd_start(&vcdFile);
-    }
-
-    connected = true;
 }
 
 void LcdLogic::unwireHook()
 {
-    if (!connected) {
-        return;
-    }
-
     for (int i = 0; i < 4; i++) {
         avr_irq_t * iavr = avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('C'), 4 + i);
         avr_irq_t * ilcd = hd44780.irq + IRQ_HD44780_D4 + i;
@@ -91,8 +81,6 @@ void LcdLogic::unwireHook()
     avr_free_irq(hd44780.irq, IRQ_HD44780_COUNT);
 
     avr_vcd_close(&vcdFile);
-
-    connected = false;
 }
 
 static inline QString constructLine(const char *begin, uint8_t shift)

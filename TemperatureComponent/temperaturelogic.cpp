@@ -66,20 +66,10 @@ void TemperatureLogic::wireHook(avr_t *avr)
     avr_vcd_add_signal(&vcdFile, irq + IRQ_TEMP_DQ, 1, irq_names[IRQ_TEMP_DQ]);
     avr_vcd_add_signal(&vcdFile, irq + IRQ_TEMP_OUT, 1, irq_names[IRQ_TEMP_OUT]);
     avr_vcd_add_signal(&vcdFile, irq + IRQ_TEMP_DDR, 1, irq_names[IRQ_TEMP_DDR]);
-
-    if (vcdEnabled) {
-        avr_vcd_start(&vcdFile);
-    }
-
-    connected = true;
 }
 
 void TemperatureLogic::unwireHook()
 {
-    if (!connected) {
-        return;
-    }
-
     avr_unconnect_irq(avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ(PORT), PIN), irq + IRQ_TEMP_DQ);
     avr_unconnect_irq(irq + IRQ_TEMP_OUT, avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ(PORT), PIN));
     avr_unconnect_irq(avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ(PORT), IOPORT_IRQ_DIRECTION_ALL), irq + IRQ_TEMP_DDR);
@@ -88,8 +78,6 @@ void TemperatureLogic::unwireHook()
     avr_free_irq(irq, IRQ_TEMP_COUNT);
 
     avr_vcd_close(&vcdFile);
-
-    connected = false;
 }
 
 void TemperatureLogic::ddrChangedHook(avr_irq_t *, uint32_t value, void *param)

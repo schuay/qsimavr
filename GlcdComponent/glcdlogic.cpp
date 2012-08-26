@@ -114,20 +114,10 @@ void GlcdLogic::wireHook(avr_t *avr)
                        1, irq_names[IRQ_GLCD_E]);
     avr_vcd_add_signal(&vcdFile,avr_io_getirq(avr, AVR_IOCTL_IOPORT_GETIRQ('E'), 7),
                        1, irq_names[IRQ_GLCD_RST]);
-
-    if (vcdEnabled) {
-        avr_vcd_start(&vcdFile);
-    }
-
-    connected = true;
 }
 
 void GlcdLogic::unwireHook()
 {
-    if (!connected) {
-        return;
-    }
-
     avr_free_irq(irq, IRQ_GLCD_COUNT);
     avr_vcd_close(&vcdFile);
 
@@ -138,8 +128,6 @@ void GlcdLogic::unwireHook()
     chip2.disconnect();
 
     touchscreen.unwire();
-
-    connected = false;
 }
 
 void GlcdLogic::pinChangedHook(struct avr_irq_t *irq, uint32_t value, void *param)

@@ -40,24 +40,12 @@ void EepromLogic::wireHook(avr_t *avr)
     avr_vcd_add_signal(&vcdFile,
         avr_io_getirq(avr, AVR_IOCTL_TWI_GETIRQ(0), TWI_IRQ_STATUS), 8 /* bits */ ,
         "TWSR" );
-
-    if (vcdEnabled) {
-        avr_vcd_start(&vcdFile);
-    }
-
-    connected = true;
 }
 
 void EepromLogic::unwireHook()
 {
-    if (!connected) {
-        return;
-    }
-
     twi.unwireHook();
     avr_vcd_close(&vcdFile);
-
-    connected = false;
 }
 
 uint8_t EepromLogic::incrementAddress()
