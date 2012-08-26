@@ -81,9 +81,12 @@ void SimAVR::run()
     avr_reset(avr);
 
     int state;
+    uint8_t i = 0;
     do {
         state = avr_run(avr);
-        QCoreApplication::processEvents();
+        if (i++ == 0) { /* Processing on each iteration saps performance. */
+            QCoreApplication::processEvents();
+        }
     } while (state != cpu_Done && state != cpu_Crashed);
     emit simulationStateChanged(Done);
 }
