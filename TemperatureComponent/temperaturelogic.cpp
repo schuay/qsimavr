@@ -100,7 +100,11 @@ void TemperatureLogic::ddrChangedHook(avr_irq_t *, uint32_t value, void *param)
 
 void TemperatureLogic::ddrChanged(uint32_t value)
 {
-    output = (value == 1);
+    bool output = (value == 1);
+    if (this->output == output) {
+        return;
+    }
+    this->output = output;
 
     if (output) {
         ds1820.pinChanged(port);
