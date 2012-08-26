@@ -31,6 +31,10 @@ class TemperatureLogic : public ComponentLogic
 public:
     TemperatureLogic();
 
+signals:
+    void scratchpadChanged(QByteArray data);
+    void eepromChanged(QByteArray data);
+
 protected:
     void wireHook(avr_t *avr);
     void unwireHook();

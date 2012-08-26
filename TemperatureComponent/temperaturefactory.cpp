@@ -28,5 +28,10 @@ Component TemperatureFactory::create()
     QSharedPointer<TemperatureLogic> logic = QSharedPointer<TemperatureLogic>(new TemperatureLogic());
     Component component = { gui, logic };
 
+    QObject::connect(logic.data(), SIGNAL(scratchpadChanged(QByteArray)),
+                     gui.data(), SLOT(scratchpadChanged(QByteArray)), Qt::QueuedConnection);
+    QObject::connect(logic.data(), SIGNAL(eepromChanged(QByteArray)),
+                     gui.data(), SLOT(eepromChanged(QByteArray)), Qt::QueuedConnection);
+
     return component;
 }

@@ -36,6 +36,8 @@ public:
     
 signals:
     void setPin();
+    void scratchpadChanged(QByteArray data);
+    void eepromChanged(QByteArray data);
 
 private:
     static avr_cycle_count_t timerHook(avr_t *avr, avr_cycle_count_t cycles, void *param);
@@ -48,6 +50,7 @@ private:
     void functionCommand();
     void updateCRC();
     void setScratchpad(uint8_t index, uint8_t data);
+    void setEeprom(uint8_t index, uint8_t data);
     
 private:
     typedef enum {

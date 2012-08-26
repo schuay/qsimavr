@@ -36,6 +36,10 @@ public:
     ~TemperatureGui();
 
     QWidget *widget() { return this; }
+
+public slots:
+    void scratchpadChanged(QByteArray data);
+    void eepromChanged(QByteArray data);
     
 private:
     Ui::TemperatureGui *ui;

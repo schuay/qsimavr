@@ -40,6 +40,8 @@ static const char *irq_names[] = {
 TemperatureLogic::TemperatureLogic()
 {
     connect(&ds1820, SIGNAL(setPin()), this, SLOT(setPin()));
+    connect(&ds1820, SIGNAL(scratchpadChanged(QByteArray)), this, SIGNAL(scratchpadChanged(QByteArray)));
+    connect(&ds1820, SIGNAL(eepromChanged(QByteArray)), this, SIGNAL(eepromChanged(QByteArray)));
 }
 
 void TemperatureLogic::wireHook(avr_t *avr)

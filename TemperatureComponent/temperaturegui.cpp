@@ -31,3 +31,11 @@ TemperatureGui::~TemperatureGui()
 {
     delete ui;
 }
+
+void TemperatureGui::scratchpadChanged(QByteArray data)
+{
+}
+
+void TemperatureGui::eepromChanged(QByteArray data)
+{
+}

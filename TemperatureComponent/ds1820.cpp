@@ -79,6 +79,8 @@ enum {
 DS1820::DS1820(QObject *parent) :
     QObject(parent)
 {
+    scratchpad.fill(0x00, SCRATCHPAD_COUNT);
+
     setScratchpad(SCRATCHPAD_TEMP_LSB, 0xaa);
     setScratchpad(SCRATCHPAD_TEMP_MSB, 0x00);
     setScratchpad(SCRATCHPAD_TH_REG, 0x00);
@@ -89,12 +91,30 @@ DS1820::DS1820(QObject *parent) :
     setScratchpad(SCRATCHPAD_COUNT_PER_C, 0x10);
 
     eeprom.fill(0x00, EEPROM_BYTES);
+    emit eepromChanged(eeprom);
 }
 
 void DS1820::setScratchpad(uint8_t index, uint8_t data)
 {
+    if (index >= SCRATCHPAD_COUNT || scratchpad.at(index) == data) {
+        return;
+    }
+
     scratchpad[index] = data;
     scratchpad[SCRATCHPAD_CRC] = crc8((uint8_t *)scratchpad.data(), SCRATCHPAD_COUNT - 1);
+
+    emit scratchpadChanged(scratchpad);
+}
+
+void DS1820::setEeprom(uint8_t index, uint8_t data)
+{
+    if (index >= EEPROM_BYTES || eeprom.at(index) == data) {
+        return;
+    }
+
+    eeprom[index] = data;
+
+    emit eepromChanged(eeprom);
 }
 
 void DS1820::wire(avr_t *avr)
@@ -353,8 +373,8 @@ void DS1820::functionCommand()
 
     case FUN_COPY_SCRATCHPAD:
         DEBUG("%s: COPY SCRATCHPAD", __PRETTY_FUNCTION__);
-        eeprom[0] = scratchpad[SCRATCHPAD_TH_REG];
-        eeprom[1] = scratchpad[SCRATCHPAD_TL_REG];
+        setEeprom(0, scratchpad[SCRATCHPAD_TH_REG]);
+        setEeprom(1, scratchpad[SCRATCHPAD_TL_REG]);
         break;
 
     case FUN_RECALL_E:
