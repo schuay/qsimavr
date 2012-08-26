@@ -25,10 +25,16 @@ ComponentLogic::ComponentLogic(QObject *parent) :
     connected(false),
     vcdEnabled(false)
 {
+    memset(&io, 0, sizeof(io));
+    io.instance = this;
+    io.io.kind = "component";
+    io.io.reset = ComponentLogic::resetHookPrivate;
 }
 
 void ComponentLogic::wire(avr_t *avr)
 {
+    avr_register_io(avr, &io.io);
+
     wireHook(avr);
 
     if (vcdEnabled) {
@@ -47,6 +53,12 @@ void ComponentLogic::unwire()
     unwireHook();
 
     connected = false;
+}
+
+void ComponentLogic::resetHookPrivate(avr_io_t *io)
+{
+    component_io_t *p = (component_io_t *)io;
+    p->instance->resetHook();
 }
 
 void ComponentLogic::enableVcd(bool vcdEnabled)

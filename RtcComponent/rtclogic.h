@@ -35,6 +35,7 @@ public:
 protected:
     void wireHook(avr_t *avr);
     void unwireHook();
+    void resetHook();
 
 private:
     /** Increments the address pointer and returns its original value. */
@@ -45,8 +46,6 @@ private:
     void incrementSeconds();
     static avr_cycle_count_t incrementSecondsHook(avr_t *avr, avr_cycle_count_t when, void *param);
 
-    static void resetHook(avr_io_t *io);
-
 private:
     TwiComponent twi;
 
@@ -54,12 +53,6 @@ private:
     uint8_t aptr;   /**< Address pointer. */
 
     avr_t *avr;
-
-    /** We register as an IO module to receive reset events. */
-    struct rtc_io_t {
-        avr_io_t io;
-        RtcLogic *instance;
-    } io;
 };
 
 #endif // RTCLOGIC_H

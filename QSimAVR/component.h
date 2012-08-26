@@ -74,12 +74,21 @@ public:
 protected:
     virtual void wireHook(avr_t *avr) = 0;
     virtual void unwireHook() = 0;
+    virtual void resetHook() { }
 
 protected:
     bool connected;
     bool vcdEnabled;
 
     avr_vcd_t vcdFile;
+
+    struct component_io_t {
+        avr_io_t io;
+        ComponentLogic *instance;
+    } io;
+
+private:
+    static void resetHookPrivate(avr_io_t *io);
 
 private:
     Q_DISABLE_COPY(ComponentLogic)
