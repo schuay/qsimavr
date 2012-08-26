@@ -102,8 +102,8 @@ extern uint8_t DS18X20_format_from_decicelsius( int16_t decicelsius,
 
 
 #if DS18X20_MAX_RESOLUTION
-// temperature unit for max. resolution is °C * 10e-4
-// examples: -250625 -> -25.0625°C, 1250000 -> 125.0000 °C
+// temperature unit for max. resolution is C * 10e-4
+// examples: -250625 -> -25.0625C, 1250000 -> 125.0000 C
 extern uint8_t DS18X20_read_maxres( uint8_t id[],
 	int32_t *temperaturevalue );
 extern uint8_t DS18X20_read_maxres_single( uint8_t familycode,

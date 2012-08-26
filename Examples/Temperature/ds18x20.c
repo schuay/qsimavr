@@ -157,7 +157,7 @@ static void DS18X20_uart_put_temp(const uint8_t subzero,
 		uart_puts_P("0");
 	}
 	uart_puts(buffer);
-	uart_puts_P("°C");
+	uart_puts_P("C");
 }
 
 /* verbose output rom-search follows read-scratchpad in one loop */
@@ -245,11 +245,11 @@ uint8_t DS18X20_read_meas_all_verbose( void )
 			} else {
 				uart_puts_P(" conv: ");
 				uart_put_int(decicelsius);
-				uart_puts_P(" deci°C ");
+				uart_puts_P(" deciC ");
 				DS18X20_format_from_decicelsius( decicelsius, s, 10 );
 				uart_puts_P(" fmt: ");
 				uart_puts(s);
-				uart_puts_P(" °C ");
+				uart_puts_P(" C ");
 			}
 
 			uart_puts("\r");
@@ -452,7 +452,7 @@ uint8_t DS18X20_format_from_decicelsius( int16_t decicelsius, char str[], uint8_
 	div_t dt;
 	uint8_t ret;
 
-	// range from -550:-55.0°C to 1250:+125.0°C -> min. 6+1 chars
+	// range from -550:-55.0C to 1250:+125.0C -> min. 6+1 chars
 	if ( n >= (6+1) && decicelsius > -1000 && decicelsius < 10000 ) {
 
 		if ( decicelsius < 0) {
@@ -618,7 +618,7 @@ uint8_t DS18X20_format_from_maxres( int32_t temperaturevalue, char str[], uint8_
 	ldiv_t ldt;
 	uint8_t ret;
 
-	// range from -550000:-55.0000°C to 1250000:+125.0000°C -> min. 9+1 chars
+	// range from -550000:-55.0000C to 1250000:+125.0000C -> min. 9+1 chars
 	if ( n >= (9+1) && temperaturevalue > -1000000L && temperaturevalue < 10000000L ) {
 
 		if ( temperaturevalue < 0) {
