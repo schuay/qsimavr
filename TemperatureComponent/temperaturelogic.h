@@ -35,6 +35,10 @@ signals:
     void scratchpadChanged(QByteArray data);
     void eepromChanged(QByteArray data);
 
+public slots:
+    void onScratchpadChange(QByteArray data);
+    void onEepromChange(QByteArray data);
+
 protected:
     void wireHook(avr_t *avr);
     void unwireHook();

@@ -144,3 +144,13 @@ void TemperatureLogic::setPin()
     avr_raise_irq(irq + IRQ_TEMP_OUT, ds1820.pinLevel());
     reentrant = false;
 }
+
+void TemperatureLogic::onScratchpadChange(QByteArray data)
+{
+    ds1820.setScratchpad(data);
+}
+
+void TemperatureLogic::onEepromChange(QByteArray data)
+{
+    ds1820.setEeprom(data);
+}

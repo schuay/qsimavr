@@ -29,9 +29,15 @@ Component TemperatureFactory::create()
     Component component = { gui, logic };
 
     QObject::connect(logic.data(), SIGNAL(scratchpadChanged(QByteArray)),
-                     gui.data(), SLOT(scratchpadChanged(QByteArray)), Qt::QueuedConnection);
+                     gui.data(), SLOT(onScratchpadChange(QByteArray)), Qt::QueuedConnection);
     QObject::connect(logic.data(), SIGNAL(eepromChanged(QByteArray)),
-                     gui.data(), SLOT(eepromChanged(QByteArray)), Qt::QueuedConnection);
+                     gui.data(), SLOT(onEepromChange(QByteArray)), Qt::QueuedConnection);
+
+
+    QObject::connect(gui.data(), SIGNAL(scratchpadChanged(QByteArray)),
+                     logic.data(), SLOT(onScratchpadChange(QByteArray)), Qt::QueuedConnection);
+    QObject::connect(gui.data(), SIGNAL(eepromChanged(QByteArray)),
+                     logic.data(), SLOT(onEepromChange(QByteArray)), Qt::QueuedConnection);
 
     return component;
 }

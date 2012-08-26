@@ -35,6 +35,9 @@ TemperatureGui::TemperatureGui(QWidget *parent) :
     eepromEdit->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     eepromEdit->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->vlEeprom->addWidget(eepromEdit);
+
+    connect(scratchpadEdit, SIGNAL(dataChanged()), this, SLOT(scratchpadChangedInternal()));
+    connect(eepromEdit, SIGNAL(dataChanged()), this, SLOT(eepromChangedInternal()));
 }
 
 TemperatureGui::~TemperatureGui()
@@ -42,12 +45,22 @@ TemperatureGui::~TemperatureGui()
     delete ui;
 }
 
-void TemperatureGui::scratchpadChanged(QByteArray data)
+void TemperatureGui::onScratchpadChange(QByteArray data)
 {
     scratchpadEdit->setData(data);
 }
 
-void TemperatureGui::eepromChanged(QByteArray data)
+void TemperatureGui::onEepromChange(QByteArray data)
 {
     eepromEdit->setData(data);
+}
+
+void TemperatureGui::scratchpadChangedInternal()
+{
+    emit scratchpadChanged(scratchpadEdit->data());
+}
+
+void TemperatureGui::eepromChangedInternal()
+{
+    emit eepromChanged(eepromEdit->data());
 }

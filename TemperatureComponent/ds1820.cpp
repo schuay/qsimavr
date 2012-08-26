@@ -91,7 +91,6 @@ DS1820::DS1820(QObject *parent) :
     setScratchpad(SCRATCHPAD_COUNT_PER_C, 0x10);
 
     eeprom.fill(0x00, EEPROM_BYTES);
-    emit eepromChanged(eeprom);
 }
 
 void DS1820::setScratchpad(uint8_t index, uint8_t data)
@@ -115,6 +114,19 @@ void DS1820::setEeprom(uint8_t index, uint8_t data)
     eeprom[index] = data;
 
     emit eepromChanged(eeprom);
+}
+
+void DS1820::setScratchpad(QByteArray data)
+{
+    scratchpad = data;
+    scratchpad[SCRATCHPAD_CRC] = crc8((uint8_t *)scratchpad.data(), SCRATCHPAD_COUNT - 1);
+
+    emit scratchpadChanged(scratchpad);
+}
+
+void DS1820::setEeprom(QByteArray data)
+{
+    eeprom = data;
 }
 
 void DS1820::wire(avr_t *avr)
@@ -356,8 +368,6 @@ void DS1820::functionCommand()
     case FUN_CONVERT_T:
         DEBUG("%s: CONVERT T", __PRETTY_FUNCTION__);
         state = CONVERT;
-        setScratchpad(SCRATCHPAD_TEMP_LSB, 0xff); /* == 0.5. */
-        setScratchpad(SCRATCHPAD_TEMP_MSB, 0xff); /* Sign == Negative. */
         break;
 
     case FUN_WRITE_SCRATCHPAD:

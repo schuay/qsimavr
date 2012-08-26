@@ -33,6 +33,9 @@ public:
 
     uint8_t pinLevel() const { return level; }
     void pinChanged(uint8_t level);
+
+    void setScratchpad(QByteArray data);
+    void setEeprom(QByteArray data);
     
 signals:
     void setPin();
