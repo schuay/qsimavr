@@ -21,6 +21,7 @@
 #define TEMPERATUREGUI_H
 
 #include <component.h>
+#include <qhexedit.h>
 #include <QWidget>
 
 namespace Ui {
@@ -43,6 +44,9 @@ public slots:
     
 private:
     Ui::TemperatureGui *ui;
+
+    QHexEdit *scratchpadEdit;
+    QHexEdit *eepromEdit;
 };
 
 #endif // TEMPERATUREGUI_H

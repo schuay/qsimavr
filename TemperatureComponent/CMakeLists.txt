@@ -25,10 +25,12 @@ add_library(TemperatureComponent SHARED
 target_link_libraries(TemperatureComponent
     ${QT_LIBRARIES}
     ${SIMAVR_LIBRARIES}
+    QHexEdit2
 )
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/QSimAVR
+    ${CMAKE_SOURCE_DIR}/QHexEdit2
     ${CMAKE_CURRENT_BINARY_DIR}
     ${QT_INCLUDES}
     ${SIMAVR_INCLUDES}
