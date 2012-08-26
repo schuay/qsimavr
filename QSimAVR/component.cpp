@@ -58,7 +58,13 @@ void ComponentLogic::unwire()
 void ComponentLogic::resetHookPrivate(avr_io_t *io)
 {
     component_io_t *p = (component_io_t *)io;
-    p->instance->resetHook();
+    ComponentLogic *q = p->instance;
+
+    if (q->vcdEnabled) {
+        avr_vcd_start(&q->vcdFile);
+    }
+
+    q->resetHook();
 }
 
 void ComponentLogic::enableVcd(bool vcdEnabled)
