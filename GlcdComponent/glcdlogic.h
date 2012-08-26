@@ -33,8 +33,9 @@ class GlcdLogic : public ComponentLogic
 public:
     GlcdLogic();
 
-    void wire(avr_t *avr);
-    void unwire();
+protected:
+    void wireHook(avr_t *avr);
+    void unwireHook();
 
 public slots:
     void pressed(QPoint coord);

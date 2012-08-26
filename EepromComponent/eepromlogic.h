@@ -28,12 +28,13 @@ class EepromLogic : public ComponentLogic, public TwiSlave
 public:
     EepromLogic();
 
-    void wire(avr_t *avr);
-    void unwire();
-
     uint8_t transmitByte();
     bool matchesAddress(uint8_t address);
     void received(const QByteArray &data);
+
+protected:
+    void wireHook(avr_t *avr);
+    void unwireHook();
 
 private:
     uint8_t incrementAddress();

@@ -32,9 +32,9 @@ EepromLogic::EepromLogic() : twi(this), addressPointer(0)
     eeprom.fill(0xff, EEPROM_SIZE);
 }
 
-void EepromLogic::wire(avr_t *avr)
+void EepromLogic::wireHook(avr_t *avr)
 {
-    twi.wire(avr);
+    twi.wireHook(avr);
 
     avr_vcd_init(avr, "eeprom.vcd", &vcdFile, 10000);
     avr_vcd_add_signal(&vcdFile,
@@ -48,13 +48,13 @@ void EepromLogic::wire(avr_t *avr)
     connected = true;
 }
 
-void EepromLogic::unwire()
+void EepromLogic::unwireHook()
 {
     if (!connected) {
         return;
     }
 
-    twi.unwire();
+    twi.unwireHook();
     avr_vcd_close(&vcdFile);
 
     connected = false;

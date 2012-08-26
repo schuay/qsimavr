@@ -201,12 +201,12 @@ void RtcLogic::resetHook(avr_io_t *io)
     avr_cycle_timer_register_usec(io->avr, USECS_PER_SEC, RtcLogic::incrementSecondsHook, p->instance);
 }
 
-void RtcLogic::wire(avr_t *avr)
+void RtcLogic::wireHook(avr_t *avr)
 {
     this->avr = avr;
     avr_register_io(avr, &io.io);
 
-    twi.wire(avr);
+    twi.wireHook(avr);
 
     avr_vcd_init(avr, "eeprom.vcd", &vcdFile, 10000);
     avr_vcd_add_signal(&vcdFile,
@@ -220,13 +220,13 @@ void RtcLogic::wire(avr_t *avr)
     connected = true;
 }
 
-void RtcLogic::unwire()
+void RtcLogic::unwireHook()
 {
     if (!connected) {
         return;
     }
 
-    twi.unwire();
+    twi.unwireHook();
 
     avr_vcd_close(&vcdFile);
 

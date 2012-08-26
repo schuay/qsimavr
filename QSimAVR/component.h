@@ -67,9 +67,13 @@ public:
     ComponentLogic(QObject *parent = NULL);
     virtual ~ComponentLogic() { }
 
-    virtual void wire(avr_t *avr) = 0;
-    virtual void unwire() = 0;
+    virtual void wire(avr_t *avr);
+    virtual void unwire();
     virtual void enableVcd(bool vcdEnabled);
+
+protected:
+    virtual void wireHook(avr_t *avr) = 0;
+    virtual void unwireHook() = 0;
 
 protected:
     bool connected;

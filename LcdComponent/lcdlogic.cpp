@@ -29,7 +29,7 @@ LcdLogic::LcdLogic(QObject *parent) :
 {
 }
 
-void LcdLogic::wire(avr_t *avr)
+void LcdLogic::wireHook(avr_t *avr)
 {
     this->avr = avr;
 
@@ -69,7 +69,7 @@ void LcdLogic::wire(avr_t *avr)
     connected = true;
 }
 
-void LcdLogic::unwire()
+void LcdLogic::unwireHook()
 {
     if (!connected) {
         return;

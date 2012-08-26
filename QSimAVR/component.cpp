@@ -27,6 +27,16 @@ ComponentLogic::ComponentLogic(QObject *parent) :
 {
 }
 
+void ComponentLogic::wire(avr_t *avr)
+{
+    wireHook(avr);
+}
+
+void ComponentLogic::unwire()
+{
+    unwireHook();
+}
+
 void ComponentLogic::enableVcd(bool vcdEnabled)
 {
     if (this->vcdEnabled == vcdEnabled) {

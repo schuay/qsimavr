@@ -28,12 +28,13 @@ class RtcLogic : public ComponentLogic, public TwiSlave
 public:
     RtcLogic();
 
-    void wire(avr_t *avr);
-    void unwire();
-
     uint8_t transmitByte();
     bool matchesAddress(uint8_t address);
     void received(const QByteArray &data);
+
+protected:
+    void wireHook(avr_t *avr);
+    void unwireHook();
 
 private:
     /** Increments the address pointer and returns its original value. */

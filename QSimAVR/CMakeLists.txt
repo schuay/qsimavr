@@ -3,6 +3,7 @@ set(qsimavr_SRCS
     QsLog.cpp
     QsLogDest.cpp
     aboutdialog.cpp
+    component.cpp
     main.cpp
     mainwindow.cpp
     pluginmanager.cpp

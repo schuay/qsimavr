@@ -31,8 +31,9 @@ class TemperatureLogic : public ComponentLogic
 public:
     TemperatureLogic();
 
-    void wire(avr_t *avr);
-    void unwire();
+protected:
+    void wireHook(avr_t *avr);
+    void unwireHook();
 
 private:
     static void ddrChangedHook(struct avr_irq_t *irq, uint32_t value, void *param);

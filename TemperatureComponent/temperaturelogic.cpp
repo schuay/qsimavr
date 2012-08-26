@@ -42,7 +42,7 @@ TemperatureLogic::TemperatureLogic()
     connect(&ds1820, SIGNAL(setPin()), this, SLOT(setPin()));
 }
 
-void TemperatureLogic::wire(avr_t *avr)
+void TemperatureLogic::wireHook(avr_t *avr)
 {
     this->avr = avr;
     output = false;
@@ -74,7 +74,7 @@ void TemperatureLogic::wire(avr_t *avr)
     connected = true;
 }
 
-void TemperatureLogic::unwire()
+void TemperatureLogic::unwireHook()
 {
     if (!connected) {
         return;

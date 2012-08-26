@@ -32,8 +32,9 @@ class LcdLogic : public ComponentLogic
 public:
     explicit LcdLogic(QObject *parent = 0);
 
-    void wire(avr_t *avr);
-    void unwire();
+protected:
+    void wireHook(avr_t *avr);
+    void unwireHook();
 
 signals:
     void textChanged(QString line1, QString line2);

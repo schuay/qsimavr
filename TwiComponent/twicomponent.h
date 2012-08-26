@@ -18,8 +18,8 @@ class TWICOMPONENTSHARED_EXPORT TwiComponent : public ComponentLogic
 public:
     TwiComponent(TwiSlave *slave);
 
-    void wire(avr_t *avr);
-    void unwire();
+    void wireHook(avr_t *avr);
+    void unwireHook();
 
 private:
     void reset();
