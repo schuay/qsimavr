@@ -64,27 +64,12 @@ private:
 class ComponentLogic : public QObject
 {
 public:
-    ComponentLogic() : connected(false), vcdEnabled(false) { }
-    ComponentLogic(QObject *parent) : QObject(parent), connected(false), vcdEnabled(false) { }
+    ComponentLogic(QObject *parent = NULL);
     virtual ~ComponentLogic() { }
 
     virtual void wire(avr_t *avr) = 0;
     virtual void unwire() = 0;
-    virtual void enableVcd(bool vcdEnabled)
-    {
-        if (this->vcdEnabled == vcdEnabled) {
-            return;
-        }
-
-        this->vcdEnabled = vcdEnabled;
-        if (connected) {
-            if (vcdEnabled) {
-                avr_vcd_start(&vcdFile);
-            } else {
-                avr_vcd_stop(&vcdFile);
-            }
-        }
-    }
+    virtual void enableVcd(bool vcdEnabled);
 
 protected:
     bool connected;
