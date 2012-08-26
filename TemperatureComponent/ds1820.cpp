@@ -59,16 +59,18 @@
 #define ROM_ID (0x370008022e49fb10)
 #define ROM_ID_BITS (64)
 
-#define SCRATCHPAD_BYTES (9)
-#define SCRATCHPAD_TEMP_LSB (0)
-#define SCRATCHPAD_TEMP_MSB (1)
-#define SCRATCHPAD_TH_REG (2)
-#define SCRATCHPAD_TL_REG (3)
-#define SCRATCHPAD_RESERVED1 (4)
-#define SCRATCHPAD_RESERVED2 (5)
-#define SCRATCHPAD_COUNT_REMAIN (6)
-#define SCRATCHPAD_COUNT_PER_C (7)
-#define SCRATCHPAD_CRC (8)
+enum {
+    SCRATCHPAD_TEMP_LSB = 0,
+    SCRATCHPAD_TEMP_MSB,
+    SCRATCHPAD_TH_REG,
+    SCRATCHPAD_TL_REG,
+    SCRATCHPAD_RESERVED1,
+    SCRATCHPAD_RESERVED2,
+    SCRATCHPAD_COUNT_REMAIN,
+    SCRATCHPAD_COUNT_PER_C,
+    SCRATCHPAD_CRC,
+    SCRATCHPAD_COUNT
+};
 
 #define EEPROM_BYTES (2)
 
@@ -77,22 +79,22 @@
 DS1820::DS1820(QObject *parent) :
     QObject(parent)
 {
-    scratchpad[SCRATCHPAD_TEMP_LSB] = 0xaa;
-    scratchpad[SCRATCHPAD_TEMP_MSB] = 0x00;
-    scratchpad[SCRATCHPAD_TH_REG] = 0x00;
-    scratchpad[SCRATCHPAD_TL_REG] = 0x00;
-    scratchpad[SCRATCHPAD_RESERVED1] = 0xff;
-    scratchpad[SCRATCHPAD_RESERVED2] = 0xff;
-    scratchpad[SCRATCHPAD_COUNT_REMAIN] = 0x0c;
-    scratchpad[SCRATCHPAD_COUNT_PER_C] = 0x10;
-    updateCRC();
+    setScratchpad(SCRATCHPAD_TEMP_LSB, 0xaa);
+    setScratchpad(SCRATCHPAD_TEMP_MSB, 0x00);
+    setScratchpad(SCRATCHPAD_TH_REG, 0x00);
+    setScratchpad(SCRATCHPAD_TL_REG, 0x00);
+    setScratchpad(SCRATCHPAD_RESERVED1, 0xff);
+    setScratchpad(SCRATCHPAD_RESERVED2, 0xff);
+    setScratchpad(SCRATCHPAD_COUNT_REMAIN, 0x0c);
+    setScratchpad(SCRATCHPAD_COUNT_PER_C, 0x10);
 
     eeprom.fill(0x00, EEPROM_BYTES);
 }
 
-void DS1820::updateCRC()
+void DS1820::setScratchpad(uint8_t index, uint8_t data)
 {
-    scratchpad[SCRATCHPAD_CRC] = crc8((uint8_t *)scratchpad.data(), SCRATCHPAD_BYTES - 1);
+    scratchpad[index] = data;
+    scratchpad[SCRATCHPAD_CRC] = crc8((uint8_t *)scratchpad.data(), SCRATCHPAD_COUNT - 1);
 }
 
 void DS1820::wire(avr_t *avr)
@@ -217,8 +219,7 @@ void DS1820::pinChanged(uint8_t level)
             state = IDLE;
         }
 
-        scratchpad[index] = (scratchpad[index] & ~(1 << bit)) | (read(duration) << bit);
-        updateCRC();
+        setScratchpad(index, (scratchpad[index] & ~(1 << bit)) | (read(duration) << bit));
 
         incount++;
         }
@@ -270,7 +271,7 @@ void DS1820::timer()
         break;
 
     case READ_SCRATCHPAD:
-        if (outcount == BITS_PER_BYTE * SCRATCHPAD_BYTES) {
+        if (outcount == BITS_PER_BYTE * SCRATCHPAD_COUNT) {
             outcount = 0;
             state = IDLE;
         }
@@ -335,9 +336,8 @@ void DS1820::functionCommand()
     case FUN_CONVERT_T:
         DEBUG("%s: CONVERT T", __PRETTY_FUNCTION__);
         state = CONVERT;
-        scratchpad[SCRATCHPAD_TEMP_LSB] = 0xff; /* == 0.5. */
-        scratchpad[SCRATCHPAD_TEMP_MSB] = 0xff; /* Sign == Negative. */
-        updateCRC();
+        setScratchpad(SCRATCHPAD_TEMP_LSB, 0xff); /* == 0.5. */
+        setScratchpad(SCRATCHPAD_TEMP_MSB, 0xff); /* Sign == Negative. */
         break;
 
     case FUN_WRITE_SCRATCHPAD:
@@ -359,9 +359,8 @@ void DS1820::functionCommand()
 
     case FUN_RECALL_E:
         DEBUG("%s: RECALL E", __PRETTY_FUNCTION__);
-        scratchpad[SCRATCHPAD_TH_REG] = eeprom[0];
-        scratchpad[SCRATCHPAD_TL_REG] = eeprom[1];
-        updateCRC();
+        setScratchpad(SCRATCHPAD_TH_REG, eeprom[0]);
+        setScratchpad(SCRATCHPAD_TL_REG, eeprom[1]);
         state = RECALL_E;
         break;
 

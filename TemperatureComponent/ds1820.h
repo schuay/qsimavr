@@ -47,6 +47,7 @@ private:
     void romCommand();
     void functionCommand();
     void updateCRC();
+    void setScratchpad(uint8_t index, uint8_t data);
     
 private:
     typedef enum {
