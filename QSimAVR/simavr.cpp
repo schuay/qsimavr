@@ -58,6 +58,10 @@ void SimAVR::load(const QString &filename)
     }
 
     avr = avr_make_mcu_by_name(firmware.mmcu);
+    if (avr == NULL) {
+        return;
+    }
+
     avr_init(avr);
 
     avr_load_firmware(avr, &firmware);
