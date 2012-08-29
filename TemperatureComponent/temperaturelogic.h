@@ -61,7 +61,6 @@ private:
 
     DS1820 ds1820;
 
-    uint8_t port; /**< Keeps track of port settings (restored when DDR switched to output). */
     bool output;
     bool reentrant;
 };

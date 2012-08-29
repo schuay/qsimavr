@@ -49,7 +49,6 @@ void TemperatureLogic::wireHook(avr_t *avr)
     this->avr = avr;
     output = false;
     reentrant = false;
-    port = 0;
 
     ds1820.wire(avr);
 
@@ -96,10 +95,7 @@ void TemperatureLogic::ddrChanged(uint32_t value)
     }
     this->output = output;
 
-    if (output) {
-        ds1820.pinChanged(port);
-        setPin();
-    } else {
+    if (!output) {
         /* The pin has just been switched to input and the ds1820 takes control. */
         ds1820.pinChanged(1);
         setPin();
@@ -123,7 +119,6 @@ void TemperatureLogic::pinChanged(uint32_t value)
          * the nested IRQ change would be immediately overwritten.
          * This assumes that there is no internal pull-up set.
          */
-        port = value;
         avr_cycle_timer_register(avr, 0, setPinHook, this);
         return;
     }
