@@ -63,6 +63,7 @@ void SimAVR::load(const QString &filename)
     }
 
     avr_init(avr);
+    avr->gdb_port = GDB_PORT;
 
     avr_load_firmware(avr, &firmware);
 
@@ -130,12 +131,10 @@ void SimAVR::attachGdb()
 void SimAVR::attachGdbInternal()
 {
     /* Only init GDB once. */
-    if (avr->gdb_port != GDB_PORT) {
-        avr->gdb_port = GDB_PORT;
-        avr->state = cpu_Stopped;
+    if (avr->gdb == NULL) {
         avr_gdb_init(avr);
-    } else {
-        avr->state = cpu_Stopped;
     }
+
+    avr->state = cpu_Stopped;
     emit simulationStateChanged(Paused);
 }
