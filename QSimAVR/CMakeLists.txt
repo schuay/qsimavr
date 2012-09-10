@@ -1,3 +1,13 @@
+set(VERSION 1)
+if(NOT PLUGIN_PATH)
+    set(PLUGIN_PATH ${CMAKE_INSTALL_PREFIX}/lib/qsimavr)
+endif()
+
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/config.h.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/config.h"
+)
+
 set(qsimavr_SRCS
     QsDebugOutput.cpp
     QsLog.cpp

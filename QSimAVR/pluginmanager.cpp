@@ -19,6 +19,7 @@
 
 #include "pluginmanager.h"
 
+#include <config.h>
 #include <QDir>
 #include <QFileInfo>
 #include <QLibrary>
@@ -26,8 +27,6 @@
 #include <QSettings>
 
 #include "QsLog.h"
-
-#define PLUGINDIR ("plugins")
 
 #define KEY_ENABLED(name) (QString("Plugins/%1_Enabled").arg(name))
 #define KEY_VCD(name) (QString("Plugins/%1_VCD").arg(name))
@@ -54,7 +53,7 @@ void PluginManager::load(QThread *t, QMdiArea *mdiArea)
      */
 
     QLOG_TRACE() << "Searching for available plugins";
-    QDir dir(PLUGINDIR);
+    QDir dir(PLUGIN_PATH);
     foreach (const QString &filename, dir.entryList(QDir::Files)) {
         load(t, mdiArea, dir.absoluteFilePath(filename));
     }
