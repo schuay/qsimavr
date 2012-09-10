@@ -19,3 +19,5 @@ include_directories(
     ${QT_INCLUDES}
     ${SIMAVR_INCLUDE_DIRS}
 )
+
+install(TARGETS RtcComponent DESTINATION lib/qsimavr)

@@ -45,4 +45,7 @@ include_directories(
     ${SIMAVR_INCLUDE_DIRS}
 )
 
+install(TARGETS qsimavr DESTINATION bin)
+install(FILES component.h DESTINATION include/qsimavr)
+
 # vim:set ts=4 sw=4 et:

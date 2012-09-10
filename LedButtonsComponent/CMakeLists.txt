@@ -30,3 +30,5 @@ include_directories(
     ${QT_INCLUDES}
     ${SIMAVR_INCLUDE_DIRS}
 )
+
+install(TARGETS LedButtonsComponent DESTINATION lib/qsimavr)

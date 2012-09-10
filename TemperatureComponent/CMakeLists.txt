@@ -35,3 +35,5 @@ include_directories(
     ${QT_INCLUDES}
     ${SIMAVR_INCLUDE_DIRS}
 )
+
+install(TARGETS TemperatureComponent DESTINATION lib/qsimavr)
