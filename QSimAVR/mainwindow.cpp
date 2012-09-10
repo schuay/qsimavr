@@ -169,6 +169,7 @@ void MainWindow::openRecentFile()
 
 void MainWindow::configurePlugins()
 {
+    terminateSim();
     QScopedPointer<PluginsWindow> w(new PluginsWindow(this, &pluginManager));
     w->exec();
 }
