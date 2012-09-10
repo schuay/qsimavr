@@ -42,7 +42,7 @@ target_link_libraries(qsimavr
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${QT_INCLUDES}
-    ${SIMAVR_INCLUDES}
+    ${SIMAVR_INCLUDE_DIRS}
 )
 
 # vim:set ts=4 sw=4 et:

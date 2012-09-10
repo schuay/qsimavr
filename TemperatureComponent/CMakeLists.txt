@@ -33,5 +33,5 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/QHexEdit2
     ${CMAKE_CURRENT_BINARY_DIR}
     ${QT_INCLUDES}
-    ${SIMAVR_INCLUDES}
+    ${SIMAVR_INCLUDE_DIRS}
 )

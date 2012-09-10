@@ -17,5 +17,5 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/TwiComponent
     ${CMAKE_SOURCE_DIR}/QSimAVR
     ${QT_INCLUDES}
-    ${SIMAVR_INCLUDES}
+    ${SIMAVR_INCLUDE_DIRS}
 )

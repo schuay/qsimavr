@@ -10,5 +10,5 @@ add_executable(temperature
 )
 
 include_directories(
-    ${SIMAVR_INCLUDES}
+    ${SIMAVR_INCLUDE_DIRS}
 )
