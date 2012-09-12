@@ -17,22 +17,26 @@
 
 
 
-#ifndef EEPROMLOGIC_H
-#define EEPROMLOGIC_H
+#ifndef EEPROMGUI_H
+#define EEPROMGUI_H
 
 #include <component.h>
-#include <twicomponent.h>
+#include <qhexedit.h>
+#include <QWidget>
 
-class EepromLogic : public ComponentLogic, public TwiSlave
+namespace Ui {
+class EepromGui;
+}
+
+class EepromGui : public QWidget, public ComponentGui
 {
     Q_OBJECT
-
+    
 public:
-    EepromLogic();
+    explicit EepromGui(QWidget *parent = 0);
+    ~EepromGui();
 
-    uint8_t transmitByte();
-    bool matchesAddress(uint8_t address);
-    void received(const QByteArray &data);
+    QWidget *widget() { return this; }
 
 signals:
     void dataChanged(QByteArray data);
@@ -40,18 +44,13 @@ signals:
 public slots:
     void onDataChange(QByteArray data);
 
-protected:
-    void wireHook(avr_t *avr);
-    void unwireHook();
-
+private slots:
+    void dataChangedInternal();
+    
 private:
-    uint8_t incrementAddress();
+    Ui::EepromGui *ui;
 
-private:
-    TwiComponent twi;
-
-    QByteArray eeprom;
-    uint8_t addressPointer;
+    QHexEdit *hexEdit;
 };
 
-#endif // EEPROMLOGIC_H
+#endif // EEPROMGUI_H

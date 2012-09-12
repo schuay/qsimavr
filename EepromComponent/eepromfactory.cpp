@@ -19,6 +19,7 @@
 
 #include "eepromfactory.h"
 
+#include "eepromgui.h"
 #include "eepromlogic.h"
 
 EepromFactory::EepromFactory()
@@ -28,7 +29,13 @@ EepromFactory::EepromFactory()
 Component EepromFactory::create()
 {
     QSharedPointer<EepromLogic> logic = QSharedPointer<EepromLogic>(new EepromLogic());
-    Component component = { QSharedPointer<ComponentGui>(), logic };
+    QSharedPointer<EepromGui> gui = QSharedPointer<EepromGui>(new EepromGui());
+    Component component = { gui , logic };
+
+    QObject::connect(logic.data(), SIGNAL(dataChanged(QByteArray)),
+                     gui.data(), SLOT(onDataChange(QByteArray)), Qt::QueuedConnection);
+    QObject::connect(gui.data(), SIGNAL(dataChanged(QByteArray)),
+                     logic.data(), SLOT(onDataChange(QByteArray)), Qt::QueuedConnection);
 
     return component;
 }

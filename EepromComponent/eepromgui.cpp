@@ -17,41 +17,34 @@
 
 
 
-#ifndef EEPROMLOGIC_H
-#define EEPROMLOGIC_H
+#include "eepromgui.h"
+#include "ui_eepromgui.h"
 
-#include <component.h>
-#include <twicomponent.h>
-
-class EepromLogic : public ComponentLogic, public TwiSlave
+EepromGui::EepromGui(QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::EepromGui)
 {
-    Q_OBJECT
+    ui->setupUi(this);
 
-public:
-    EepromLogic();
+    hexEdit = new QHexEdit(this);
+    hexEdit->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    hexEdit->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->verticalLayout->addWidget(hexEdit);
 
-    uint8_t transmitByte();
-    bool matchesAddress(uint8_t address);
-    void received(const QByteArray &data);
+    connect(hexEdit, SIGNAL(dataChanged()), this, SLOT(dataChangedInternal()));
+}
 
-signals:
-    void dataChanged(QByteArray data);
+EepromGui::~EepromGui()
+{
+    delete ui;
+}
 
-public slots:
-    void onDataChange(QByteArray data);
+void EepromGui::onDataChange(QByteArray data)
+{
+    hexEdit->setData(data);
+}
 
-protected:
-    void wireHook(avr_t *avr);
-    void unwireHook();
-
-private:
-    uint8_t incrementAddress();
-
-private:
-    TwiComponent twi;
-
-    QByteArray eeprom;
-    uint8_t addressPointer;
-};
-
-#endif // EEPROMLOGIC_H
+void EepromGui::dataChangedInternal()
+{
+    emit dataChanged(hexEdit->data());
+}

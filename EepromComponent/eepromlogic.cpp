@@ -30,6 +30,7 @@
 EepromLogic::EepromLogic() : twi(this), addressPointer(0)
 {
     eeprom.fill(0xff, EEPROM_SIZE);
+    emit dataChanged(eeprom);
 }
 
 void EepromLogic::wireHook(avr_t *avr)
@@ -86,4 +87,11 @@ void EepromLogic::received(const QByteArray &data)
                 (uint8_t)data[i], addressPointer);
         eeprom[incrementAddress()] = data[i];
     }
+
+    emit dataChanged(eeprom);
+}
+
+void EepromLogic::onDataChange(QByteArray data)
+{
+    eeprom = data;
 }
