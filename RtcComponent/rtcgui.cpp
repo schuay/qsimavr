@@ -17,50 +17,34 @@
 
 
 
-#ifndef RTCLOGIC_H
-#define RTCLOGIC_H
+#include "rtcgui.h"
+#include "ui_rtcgui.h"
 
-#include <component.h>
-#include <twicomponent.h>
-
-class RtcLogic : public ComponentLogic, public TwiSlave
+RtcGui::RtcGui(QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::RtcGui)
 {
-    Q_OBJECT
+    ui->setupUi(this);
 
-public:
-    RtcLogic();
+    hexEdit = new QHexEdit(this);
+    hexEdit->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    hexEdit->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->verticalLayout->addWidget(hexEdit);
 
-    uint8_t transmitByte();
-    bool matchesAddress(uint8_t address);
-    void received(const QByteArray &data);
+    connect(hexEdit, SIGNAL(dataChanged()), this, SLOT(dataChangedInternal()));
+}
 
-signals:
-    void dataChanged(QByteArray data);
+RtcGui::~RtcGui()
+{
+    delete ui;
+}
 
-public slots:
-    void onDataChange(QByteArray data);
+void RtcGui::onDataChange(QByteArray data)
+{
+    hexEdit->setData(data);
+}
 
-protected:
-    void wireHook(avr_t *avr);
-    void unwireHook();
-    void resetHook();
-
-private:
-    /** Increments the address pointer and returns its original value. */
-    uint8_t incrementAddress();
-
-    /** Increments the time stored in sram.
-     *  Called once per second (based on avr cycle calculations). */
-    void incrementSeconds();
-    static avr_cycle_count_t incrementSecondsHook(avr_t *avr, avr_cycle_count_t when, void *param);
-
-private:
-    TwiComponent twi;
-
-    QByteArray sram;
-    uint8_t aptr;   /**< Address pointer. */
-
-    avr_t *avr;
-};
-
-#endif // RTCLOGIC_H
+void RtcGui::dataChangedInternal()
+{
+    emit dataChanged(hexEdit->data());
+}

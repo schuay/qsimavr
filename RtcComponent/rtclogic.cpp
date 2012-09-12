@@ -98,6 +98,8 @@ RtcLogic::RtcLogic() : twi(this), aptr(0)
 
     sram.fill(0x00, SRAM_SIZE);
     sram.replace(0, sizeof(time), (const char *)&time, sizeof(time));
+
+    emit dataChanged(sram);
 }
 
 /**
@@ -240,4 +242,11 @@ void RtcLogic::received(const QByteArray &data)
         sram[incrementAddress()] = data[i];
     }
 
+    emit dataChanged(sram);
 }
+
+void RtcLogic::onDataChange(QByteArray data)
+{
+    sram = data;
+}
+

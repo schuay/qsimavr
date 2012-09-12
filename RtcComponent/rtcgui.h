@@ -17,22 +17,26 @@
 
 
 
-#ifndef RTCLOGIC_H
-#define RTCLOGIC_H
+#ifndef RTCGUI_H
+#define RTCGUI_H
 
 #include <component.h>
-#include <twicomponent.h>
+#include <qhexedit.h>
+#include <QWidget>
 
-class RtcLogic : public ComponentLogic, public TwiSlave
+namespace Ui {
+class RtcGui;
+}
+
+class RtcGui : public QWidget, public ComponentGui
 {
     Q_OBJECT
-
+    
 public:
-    RtcLogic();
+    explicit RtcGui(QWidget *parent = 0);
+    ~RtcGui();
 
-    uint8_t transmitByte();
-    bool matchesAddress(uint8_t address);
-    void received(const QByteArray &data);
+    QWidget *widget() { return this; }
 
 signals:
     void dataChanged(QByteArray data);
@@ -40,27 +44,13 @@ signals:
 public slots:
     void onDataChange(QByteArray data);
 
-protected:
-    void wireHook(avr_t *avr);
-    void unwireHook();
-    void resetHook();
-
+private slots:
+    void dataChangedInternal();
+    
 private:
-    /** Increments the address pointer and returns its original value. */
-    uint8_t incrementAddress();
+    Ui::RtcGui *ui;
 
-    /** Increments the time stored in sram.
-     *  Called once per second (based on avr cycle calculations). */
-    void incrementSeconds();
-    static avr_cycle_count_t incrementSecondsHook(avr_t *avr, avr_cycle_count_t when, void *param);
-
-private:
-    TwiComponent twi;
-
-    QByteArray sram;
-    uint8_t aptr;   /**< Address pointer. */
-
-    avr_t *avr;
+    QHexEdit *hexEdit;
 };
 
-#endif // RTCLOGIC_H
+#endif // RTCGUI_H
