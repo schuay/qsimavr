@@ -64,17 +64,17 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::setupToolbar()
 {
-    QAction *action = new QAction("Load", this);
+    QAction *action = new QAction(QIcon(":/icons/load"), "Load", this);
     connect(action, SIGNAL(triggered()), this, SLOT(loadFirmware()));
     ui->toolBar->addAction(action);
 
-    pauseAction = new QAction("Start/Stop", this);
+    pauseAction = new QAction(QIcon(":/icons/start"), "Start/Stop", this);
     ui->toolBar->addAction(pauseAction);
 
-    restartAction = new QAction("Restart", this);
+    restartAction = new QAction(QIcon(":/icons/restart"), "Restart", this);
     ui->toolBar->addAction(restartAction);
 
-    attachAction = new QAction("Toggle GDB", this);
+    attachAction = new QAction(QIcon(":/icons/gdb"), "Toggle GDB", this);
     ui->toolBar->addAction(attachAction);
 }
 

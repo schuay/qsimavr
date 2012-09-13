@@ -37,10 +37,15 @@ qt4_wrap_ui(qsimavr_UI
     pluginswindow.ui
 )
 
+qt4_add_resources(qsimavr_RCCS
+    qsimavr.qrc
+)
+
 add_executable(qsimavr
     ${qsimavr_SRCS}
     ${qsimavr_UI}
     ${qsimavr_MOC}
+    ${qsimavr_RCCS}
 )
 
 target_link_libraries(qsimavr

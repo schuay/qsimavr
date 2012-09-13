@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file alias="start">icons/1347520597_Gnome-Media-Playback-Start-48.png</file>
+        <file alias="restart">icons/1347520746_Gnome-View-Refresh-48.png</file>
+        <file alias="gdb">icons/1347520803_Gnome-Preferences-System-Network-48.png</file>
+        <file alias="load">icons/1347521165_Gnome-Document-Open-48.png</file>
+    </qresource>
+</RCC>
