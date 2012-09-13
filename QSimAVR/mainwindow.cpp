@@ -36,9 +36,6 @@
 /* TODO
  * Separate logic and ui(?)
  * Add settings for mmcu, frequency.
- * Add plugin management (enable/disable plugins at runtime).
- * Add standard execution control: (re)start/pause/step.
- * Add status feedback (loaded firmware, simulation state and stats).
  */
 
 MainWindow::MainWindow(QWidget *parent) :
