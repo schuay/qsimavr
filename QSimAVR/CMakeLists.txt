@@ -1,4 +1,3 @@
-set(VERSION 1)
 if(NOT PLUGIN_PATH)
     set(PLUGIN_PATH ${CMAKE_INSTALL_PREFIX}/lib/qsimavr)
 endif()

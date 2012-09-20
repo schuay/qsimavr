@@ -1,11 +1,19 @@
 cmake_minimum_required(VERSION 2.8.0)
 project(qsimavr)
 
+set(VERSION 1)
+
 if(NOT CMAKE_BUILD_TYPE)
    set(CMAKE_BUILD_TYPE Debug)
 endif()
 
 find_package(Qt4 REQUIRED)
+
+include(CPack)
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "A graphical frontend to simavr with periphery simulation")
+set(CPACK_PACKAGE_NAME "qsimavr")
+set(CPACK_PACKAGE_VERSION "${VERSION}")
+set(CPACK_RPM_PACKAGE_REQUIRES "simavr")
 
 include(FindPkgConfig)
 pkg_search_module(SIMAVR REQUIRED simavr)
