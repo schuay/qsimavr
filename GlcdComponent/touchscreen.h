@@ -39,6 +39,8 @@ private:
     void outTrigger(avr_adc_mux_t mux);
     static void outTriggerHook(struct avr_irq_t *irq, uint32_t value, void *param);
 
+    bool drivePinsValid(unsigned long adc);
+
 private:
     avr_t *avr;
 

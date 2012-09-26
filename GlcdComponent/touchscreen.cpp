@@ -19,6 +19,7 @@
 
 #include "touchscreen.h"
 
+#include <avr_ioport.h>
 #include <string.h>
 
 #include "nt7108.h"
@@ -66,25 +67,58 @@ void Touchscreen::outTriggerHook(struct avr_irq_t *, uint32_t value, void *param
     t->outTrigger(mux);
 }
 
-/* TODO: handle driver inputs. If none are on, return 0. If both are on, return a random value.
- * Otherwise, return the actual calculated voltage as below.
- */
+#define ADC_TOUCH_X (ADC_IRQ_ADC0)
+#define ADC_TOUCH_Y (ADC_IRQ_ADC1)
+
+#define DRIVEPORT 'G'
+#define DRIVEPINX (3)
+#define DRIVEPINY (4)
 
 void Touchscreen::outTrigger(avr_adc_mux_t mux)
 {
     uint32_t val = 0;
 
+    /* Handle driver inputs. If none are on, return 0. If both are on, results are random,
+     * so we also return 0.
+     * Otherwise, return the actual calculated voltage as below.
+     */
+    if (!drivePinsValid(mux.src)) {
+        qDebug("Touchscreen read attempted with invalid drive pin settings.");
+        avr_raise_irq(avr_io_getirq(avr, AVR_IOCTL_ADC_GETIRQ, mux.src), 0);
+        return;
+    }
+
     switch(mux.src) {
 
     /* X axis. */
-    case ADC_IRQ_ADC0: val = coord.x() * VOLTAGE / (NT7108_WIDTH * 2); break;
+    case ADC_TOUCH_X: val = coord.x() * VOLTAGE / (NT7108_WIDTH * 2); break;
 
     /* Y axis. */
-    case ADC_IRQ_ADC1: val = (NT7108_HEIGHT - coord.y()) * VOLTAGE / (NT7108_HEIGHT); break;
+    case ADC_TOUCH_Y: val = (NT7108_HEIGHT - coord.y()) * VOLTAGE / (NT7108_HEIGHT); break;
 
     /* Ignore all other ADC requests. */
     default: return;
     }
 
     avr_raise_irq(avr_io_getirq(avr, AVR_IOCTL_ADC_GETIRQ, mux.src), val);
+}
+
+bool Touchscreen::drivePinsValid(unsigned long adc)
+{
+    avr_ioport_state_t state;
+    if (avr_ioctl(avr, AVR_IOCTL_IOPORT_GETSTATE(DRIVEPORT), &state) != 0) {
+        qDebug("GLCD: avr_ioctl failed");
+        return true;
+    }
+
+    const bool x_high = (state.ddr & (1 << DRIVEPINX) && state.port & (1 << DRIVEPINX));
+    const bool y_high = (state.ddr & (1 << DRIVEPINY) && state.port & (1 << DRIVEPINY));
+
+    switch (adc) {
+    case ADC_TOUCH_X: return (x_high && !y_high); break;
+    case ADC_TOUCH_Y: return (y_high && !x_high); break;
+    default: break;
+    }
+
+    return true;
 }
