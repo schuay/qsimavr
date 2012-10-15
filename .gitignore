@@ -1,5 +1,6 @@
 *.axf
 *.elf
 *.swp
+*.vcd
 CMakeLists.txt.user
 build/
