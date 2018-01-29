@@ -15,16 +15,16 @@ void TwiComponent::wireHook(avr_t *avr)
     const char *names[] = { "twi.miso", "twi.mosi" };
 
     irq = avr_alloc_irq(&avr->irq_pool, 0, IRQ_COUNT, names);
-    avr_irq_register_notify(irq + TWI_IRQ_MOSI, TwiComponent::receiveHook, this);
+    avr_irq_register_notify(irq + TWI_IRQ_OUTPUT, TwiComponent::receiveHook, this);
 
-    avr_connect_irq(irq + TWI_IRQ_MISO, avr_io_getirq(avr, AVR_IOCTL_TWI_GETIRQ(0), TWI_IRQ_MISO));
-    avr_connect_irq(avr_io_getirq(avr, AVR_IOCTL_TWI_GETIRQ(0), TWI_IRQ_MOSI), irq + TWI_IRQ_MOSI);
+    avr_connect_irq(irq + TWI_IRQ_INPUT, avr_io_getirq(avr, AVR_IOCTL_TWI_GETIRQ(0), TWI_IRQ_INPUT));
+    avr_connect_irq(avr_io_getirq(avr, AVR_IOCTL_TWI_GETIRQ(0), TWI_IRQ_OUTPUT), irq + TWI_IRQ_OUTPUT);
 }
 
 void TwiComponent::unwireHook()
 {
-    avr_unconnect_irq(irq + TWI_IRQ_MISO, avr_io_getirq(avr, AVR_IOCTL_TWI_GETIRQ(0), TWI_IRQ_MISO));
-    avr_unconnect_irq(avr_io_getirq(avr, AVR_IOCTL_TWI_GETIRQ(0), TWI_IRQ_MOSI), irq + TWI_IRQ_MOSI);
+    avr_unconnect_irq(irq + TWI_IRQ_INPUT, avr_io_getirq(avr, AVR_IOCTL_TWI_GETIRQ(0), TWI_IRQ_INPUT));
+    avr_unconnect_irq(avr_io_getirq(avr, AVR_IOCTL_TWI_GETIRQ(0), TWI_IRQ_OUTPUT), irq + TWI_IRQ_OUTPUT);
 
     avr_free_irq(irq, IRQ_COUNT);
 }
@@ -66,7 +66,7 @@ void TwiComponent::receiveHook(avr_irq_t *, uint32_t value)
         reset();
         if (slave->matchesAddress(v.u.twi.addr)) {
             selected = v.u.twi.addr;
-            avr_raise_irq(irq + TWI_IRQ_MISO,
+            avr_raise_irq(irq + TWI_IRQ_INPUT,
                           avr_twi_irq_msg(TWI_COND_ACK, selected, 1));
         }
     }
@@ -85,7 +85,7 @@ void TwiComponent::receiveHook(avr_irq_t *, uint32_t value)
      * This is a write transaction.
      */
     if (v.u.twi.msg & TWI_COND_WRITE) {
-        avr_raise_irq(irq + TWI_IRQ_MISO,
+        avr_raise_irq(irq + TWI_IRQ_INPUT,
                 avr_twi_irq_msg(TWI_COND_ACK, selected, 1));
 
         data.append(v.u.twi.data);
@@ -95,7 +95,7 @@ void TwiComponent::receiveHook(avr_irq_t *, uint32_t value)
      * It's a read transaction, just send the next byte back to the master
      */
     else if (v.u.twi.msg & TWI_COND_READ) {
-        avr_raise_irq(irq + TWI_IRQ_MISO,
+        avr_raise_irq(irq + TWI_IRQ_INPUT,
                       avr_twi_irq_msg(TWI_COND_READ, selected, slave->transmitByte()));
     }
 }
